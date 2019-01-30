@@ -1,24 +1,26 @@
 type Query {
-    person: Person!
+    user: User!
     device: Device!
 }
 
-type Person {
+type User {
     name: String!
     id: String!
-    status: String!
-}
-
-type User {
-    userName: String!
-    friends: [User]!
+    info: DeviceInformation!
 }
 
 type Device {
     id: String!
     status: Status!
     name: String!
+    info: DeviceInformation!
 }
+
+type DeviceInformation{
+    name: String!
+    status: String!
+}
+
 
 enum Status {
     ON
