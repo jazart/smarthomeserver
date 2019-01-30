@@ -7,6 +7,7 @@ type User {
     name: String!
     id: String!
     info: DeviceInformation!
+#used for User information
 }
 
 type Device {
