@@ -12,7 +12,9 @@ open class Device{
 
 data class User(val name: String = "User Value goes here",
                 val id: String = UUID.randomUUID().toString(),
-                val info: DeviceInformation = DeviceInformation())
+                val family: Array<User> = arrayOf(),
+                val info: DeviceInformation = DeviceInformation()
+                )
 
 data class PlantMoisture(val name: String = "",
                          val reading: MoistureReading
