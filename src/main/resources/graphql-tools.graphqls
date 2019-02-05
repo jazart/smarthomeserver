@@ -6,7 +6,9 @@ type Query {
 type User {
     name: String!
     id: String!
+    family: String!
     info: DeviceInformation!
+#used for User information
 }
 
 type Device {
