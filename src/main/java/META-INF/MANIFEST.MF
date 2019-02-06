@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: C:\Users\jazart\smarthomeserver\src\main\kotlin\com\home\s
+ marthomeserver\SmarthomeserverApplication.kt
+

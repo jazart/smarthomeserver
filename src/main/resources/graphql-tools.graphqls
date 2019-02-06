@@ -1,0 +1,30 @@
+type Query {
+    user: User!
+    device: Device!
+}
+
+type User {
+    name: String!
+    id: String!
+    family: String!
+    info: DeviceInformation!
+#used for User information
+}
+
+type Device {
+    id: String!
+    status: Status!
+    name: String!
+    info: DeviceInformation!
+}
+
+type DeviceInformation{
+    name: String!
+    status: String!
+}
+
+
+enum Status {
+    ON
+    OFF
+}
