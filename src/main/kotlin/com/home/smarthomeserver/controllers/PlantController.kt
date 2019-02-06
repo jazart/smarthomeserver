@@ -17,27 +17,3 @@ class PlantController {
     fun plant()= "Works!"
 }
 
-class DeviceResolver : GraphQLQueryResolver {
-    fun device() = Device()
-}
-
-class UserResolver : GraphQLQueryResolver {
-    fun user() = User()
-}
-
-class DeviceInformationResolver : GraphQLQueryResolver {
-    fun deviceInfo() = DeviceInformation()
-}
-
-@Configuration
-class GraphQLConfiguration {
-
-    @Bean
-    fun deviceResolver() = DeviceResolver()
-
-    @Bean
-    fun userResolver() = UserResolver()
-
-    @Bean
-    fun deviceInfoResolver() = DeviceInformationResolver()
-}
