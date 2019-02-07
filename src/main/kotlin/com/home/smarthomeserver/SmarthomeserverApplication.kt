@@ -9,6 +9,6 @@ class SmarthomeserverApplication
 
 fun main(args: Array<String>) {
 
-    val broker = AwsBroker()
+    //val broker = AwsBroker()
     runApplication<SmarthomeserverApplication>(*args)
 }

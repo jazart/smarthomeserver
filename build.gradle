@@ -8,9 +8,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}"){
-            exclude group: 'org.eclipse.paho', module: 'org.eclipse.paho.client.mqttv3'
-        }
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
     }
 }
@@ -34,6 +32,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
+    implementation 'com.amazonaws:aws-android-sdk-core:2.6.15'
     implementation 'com.amazonaws:aws-iot-device-sdk-java:1.1.0'
     implementation 'com.graphql-java:graphql-spring-boot-starter:5.0.2'
     implementation 'com.graphql-java:graphiql-spring-boot-starter:5.0.2'

@@ -15,9 +15,16 @@ class AwsBroker {
         var awsAccesskey = "AKIAJZN5LIYOCOCFBIVQ"                       // X.509 based certificate file
         var awsKey = "IdOmetPko51kjgYBw2ur0zbbzxg7kZPcUfB0EMGu"                        //
         var client = AWSIotMqttClient(clientEndpoint, clientId, awsAccesskey, awsKey)
-        client.connect()
-        println("connection Sucessful ========================================success")
-        client.disconnect()
+        //client.connect()
+        try{
+
+            client.connect()
+            println("connection Sucessful ========================================success")
+            client.disconnect()
+        }catch(E: AWSIotException){
+            throw IllegalArgumentException("Failed to connect to AWS IoT Client.")
+        }
+
         /* PKCS#1 or PKCS#8 PEM encoded private key file
 
         // SampleUtil.java and its dependency PrivateKeyReader.java can be copied from the sample source code.
