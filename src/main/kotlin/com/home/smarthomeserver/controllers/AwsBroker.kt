@@ -6,7 +6,7 @@ import org.springframework.context.annotation.PropertySource
 import org.springframework.stereotype.Component
 
 
-@PropertySource("file:/C:/Users/jazart/smarthomeserver/config/application.template.properties")
+@PropertySource("file:C:/Users/Cadet/OneDrive/OneDrive Files/College Material/College/Spring Semester 2019/Seinor Software Engineering Project/CloneTest/config/application.template.properties")
 @Component
 class AwsBroker (@Value("\${aws_client_endpoint}") clientEndpoint: String?,
                 @Value("\${aws_client_id}") clientId: String?,
