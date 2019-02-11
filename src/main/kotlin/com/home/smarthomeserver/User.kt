@@ -1,7 +1,6 @@
 package com.home.smarthomeserver
 
 import java.util.UUID
-import java.util.concurrent.ThreadLocalRandom
 
 open class Device{
     open val info: DeviceInformation = DeviceInformation()
