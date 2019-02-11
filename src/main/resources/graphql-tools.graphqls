@@ -3,13 +3,18 @@ type Query {
     device: Device!
 }
 
+type Mutation {
+    signup(name: String, pass: String): String
+}
+
 type User {
     name: String!
     id: String!
     family: String!
     info: DeviceInformation!
-#used for User information
+    devices: [Device]
 }
+
 
 type Device {
     id: String!
