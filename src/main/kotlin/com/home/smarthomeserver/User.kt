@@ -25,7 +25,7 @@ data class DeviceInformation(val name: String = "device",
                              val status: String = "--")
 
 
-//class Light() : Device {
+//class com.home.smarthomeserver.devices.Light() : Device {
 //    override var name: String
 //        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 //        set(value) {}
