@@ -5,6 +5,7 @@ type Query {
 
 type Mutation {
     signup(name: String, pass: String): String
+    update(uId: String, deviceName: String, command: Status): String
 }
 
 type User {
