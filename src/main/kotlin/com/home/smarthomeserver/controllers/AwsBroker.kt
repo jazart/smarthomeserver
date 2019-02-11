@@ -1,13 +1,19 @@
 package com.home.smarthomeserver.controllers
 
 import com.amazonaws.services.iot.client.AWSIotMqttClient
+import com.home.smarthomeserver.devices.LedLight
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.PropertySource
 import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
+import java.io.File
+import java.lang.annotation.RetentionPolicy
+import java.nio.file.Path
+import java.nio.file.Paths
 
 
-@PropertySource("file:C:/Users/Cadet/OneDrive/OneDrive Files/College Material/College/Spring Semester 2019/Seinor Software Engineering Project/CloneTest/config/application.template.properties")
-@Component
+@PropertySource("classpath:/application.template.properties")
+@Service
 class AwsBroker (@Value("\${aws_client_endpoint}") clientEndpoint: String?,
                 @Value("\${aws_client_id}") clientId: String?,
                 @Value("\${aws_access_key}") awsAccesskey: String? ,
@@ -15,5 +21,16 @@ class AwsBroker (@Value("\${aws_client_endpoint}") clientEndpoint: String?,
 
 
     val client: AWSIotMqttClient = AWSIotMqttClient(clientEndpoint, clientId, awsAccesskey, awsKey)
+
+//    fun attachDevice(){
+//        val device = LedLight("MyPc")
+//        client.attach(device)
+//        device.power = 300
+//        device.status = "ON"
+//    }
+//
+//    fun delete() {
+//        device.delete()
+//    }
 
 }

@@ -11,7 +11,7 @@ config/
 .settings
 .springBeans
 .sts4-cacheg
-
+/src/main/resources/application.template.properties
 ### IntelliJ IDEA ###
 .idea
 *.iws

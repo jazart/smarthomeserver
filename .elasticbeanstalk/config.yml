@@ -1,6 +1,8 @@
 branch-defaults:
   Query:
     environment: SmartHomeServer-env
+  client:
+    environment: SmartHomeServer-env
   master:
     environment: SmartHomeServer-env
     group_suffix: null
