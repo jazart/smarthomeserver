@@ -1,0 +1,30 @@
+branch-defaults:
+  Query:
+    environment: SmartHomeServer-env
+  client:
+    environment: SmartHomeServer-env
+  master:
+    environment: SmartHomeServer-env
+    group_suffix: null
+deploy:
+  artifact: build/libs/smarthomeserver-0.0.1-SNAPSHOT-boot.jar
+environment-defaults:
+  SmartHomeServer-env:
+    branch: null
+    repository: null
+global:
+  application_name: smart-home-server
+  branch: null
+  default_ec2_keyname: null
+  default_platform: Java 8
+  default_region: us-west-2
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: eb-cli
+  repository: null
+  sc: git
+  workspace_type: Application
+server:
+  port: 5000
