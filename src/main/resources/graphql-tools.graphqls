@@ -1,17 +1,17 @@
 type Query {
-    user: User!git
+    user: User
     device: Device!
 }
 
 type Mutation {
     signup(name: String, pass: String): String
-    update(uId: String, deviceName: String, command: Status): String
+    update(uId: String, deviceName: String, command: Command): String
 }
 
 type User {
     name: String!
     id: String!
-    family: String!
+    family: [User]!
     info: DeviceInformation!
     devices: [Device]
 }
@@ -27,10 +27,17 @@ type Device {
 type DeviceInformation{
     name: String!
     status: String!
+    commands: [Command]!
 }
 
 
 enum Status {
-    ON
-    OFF
+    CONNECTED
+    DISCONNECTED
+}
+
+enum Command {
+    TURN_OFF
+    TURN_ON
+    PULSE
 }
