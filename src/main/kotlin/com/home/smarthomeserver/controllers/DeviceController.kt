@@ -2,19 +2,18 @@ package com.home.smarthomeserver.controllers
 
 import com.amazonaws.services.iot.client.AWSIotConnectionStatus
 import com.home.smarthomeserver.Status
-import com.home.smarthomeserver.devices.LedLight
+import com.home.smarthomeserver.devices.RPILight
+import com.home.smarthomeserver.models.Command
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RestController
 
-@RestController
+@Controller
 class DeviceController {
 
     @Autowired
     lateinit var broker: AwsBroker
-    val device = LedLight("MyPc")
+    val device = RPILight("MyRaspberryPi")
 
     fun connect() {
         if (broker.client.connectionStatus == AWSIotConnectionStatus.DISCONNECTED) {
@@ -26,9 +25,9 @@ class DeviceController {
         }
     }
 
-    @RequestMapping("/device/{id}", method = [RequestMethod.GET])
-    fun updateDeviceStatus(@PathVariable("id") id: String, deviceName: String, command: Status) {
-        device.status = command.name
+    fun updateDeviceStatus(@PathVariable("id") id: String, deviceName: String, command: Command) {
+        device.command = command.toString()
+        device.status = Status.DISCONNECTED.toString()
         println("==========connected=================")
     }
 }
