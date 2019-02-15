@@ -28,6 +28,12 @@ class DeviceController {
     fun updateDeviceStatus(@PathVariable("id") id: String, deviceName: String, command: Command) {
         device.command = command.toString()
         device.status = Status.DISCONNECTED.toString()
+        device.update("{ " +
+                                    "\"state\" : { " +
+                "                       \"desired\": {" +
+                "                           \"command\": \"$command\"} " +
+                "                     } " +
+                "               }")
         println("==========connected=================")
     }
 }
