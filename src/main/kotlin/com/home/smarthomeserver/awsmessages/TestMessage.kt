@@ -1,4 +1,4 @@
-package com.home.smarthomeserver
+package com.home.smarthomeserver.awsmessages
 
 import com.amazonaws.services.iot.client.AWSIotMessage
 import com.amazonaws.services.iot.client.AWSIotQos

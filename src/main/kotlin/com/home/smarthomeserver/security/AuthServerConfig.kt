@@ -1,4 +1,4 @@
-package com.home.smarthomeserver
+package com.home.smarthomeserver.security
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean

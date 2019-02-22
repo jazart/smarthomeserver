@@ -1,4 +1,4 @@
-package com.home.smarthomeserver
+package com.home.smarthomeserver.security
 
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Before
