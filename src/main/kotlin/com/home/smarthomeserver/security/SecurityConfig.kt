@@ -1,58 +1,41 @@
 package com.home.smarthomeserver.security
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.core.userdetails.User
-import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.provisioning.InMemoryUserDetailsManager
 
-//
-//@Configuration
-//@EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
-//class SecurityConfig : WebSecurityConfigurerAdapter() {
-//
-//    @Bean
-//    override fun userDetailsService(): UserDetailsService {
-//        val user = User.builder().run {
-//            username("user")
-//            password(passwordEncoder().encode("secret"))
-//            roles("USER")
-//            build()
-//        }
-//        return InMemoryUserDetailsManager(user)
-//    }
-//
-//
-//    @Throws(Exception::class)
-//    override fun configure(http: HttpSecurity) {
-//        http.csrf().disable()
-//                .anonymous()
-//                .and()
-//                .authorizeRequests()
-//                .antMatchers("/graphql").permitAll()
-//                .antMatchers("/graphiql").permitAll()
-//                .anyRequest().authenticated()
-//
-//    }
-//
-//    override fun configure(auth: AuthenticationManagerBuilder?) {
-//        auth?.inMemoryAuthentication()?.withUser("user")?.password(passwordEncoder().encode("secret"))?.roles("USER")
-//    }
-//
-//
-//    @Bean
-//    fun passwordEncoder(): BCryptPasswordEncoder {
-//        return BCryptPasswordEncoder()
-//    }
-//
-//    @Bean
-//    fun authManager(): AuthenticationManager = super.authenticationManagerBean()
-//}
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+class SecurityConfig : WebSecurityConfigurerAdapter() {
+
+    @Autowired
+    lateinit var jwtTokenProvider: JwtTokenProvider
+
+    @Throws(Exception::class)
+    override fun configure(http: HttpSecurity) {
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        http.csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/graphql").permitAll()
+                .antMatchers("/graphiql").permitAll()
+                .anyRequest().authenticated()
+
+        http.apply(JwtTokenFilterConfig(jwtTokenProvider))
+
+    }
+
+    @Bean
+    fun passwordEncoder(): BCryptPasswordEncoder {
+        return BCryptPasswordEncoder()
+    }
+
+    @Bean
+    fun authManager(): AuthenticationManager = super.authenticationManagerBean()
+
+}
