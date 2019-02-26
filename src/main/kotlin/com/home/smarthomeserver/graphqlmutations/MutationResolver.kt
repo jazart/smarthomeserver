@@ -1,13 +1,18 @@
 package com.home.smarthomeserver.graphqlmutations
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver
+import com.home.smarthomeserver.ChildUserRepository
+import com.home.smarthomeserver.UserService
 import com.home.smarthomeserver.controllers.DeviceController
-import com.home.smarthomeserver.model.User
+import com.home.smarthomeserver.models.ChildUser
 import com.home.smarthomeserver.models.Command
+import com.home.smarthomeserver.models.ParentUser
 import com.home.smarthomeserver.security.Unsecured
+import org.hibernate.Transaction
+import org.hibernate.engine.transaction.internal.TransactionImpl
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
-import java.util.*
 
 
 @Component
@@ -16,13 +21,31 @@ class MutationResolver : GraphQLMutationResolver {
     @Autowired
     lateinit var controller: DeviceController
 
+    @Autowired
+    lateinit var userService: UserService
+
+    @Autowired
+    lateinit var encoder: BCryptPasswordEncoder
+
+    @Autowired
+    lateinit var childUserRepository: ChildUserRepository
+
     @Unsecured
-    fun signup(name: String, pass: String): User? =
-            if (!(name.isBlank() && pass.isBlank())) {
-                User(name, UUID.randomUUID().toString())
-            } else {
-                null
-            }
+    fun signup(name: String, pass: String): String? {
+        val user = ParentUser(name = name, password = encoder.encode(pass))
+        return userService.signUp(user)
+    }
+
+    fun addChild(name: String, pass: String, parentName: String): String {
+        val user = userService.userRepository.findUserByName(parentName)
+        val child = ChildUser(name = name, password = pass, parent = user)
+        userService.addChild(user, child)
+        return "Ok"
+    }
+//    @Unsecured
+//    fun login(name: String, pass: String): String {
+//        return ""
+//    }
 
     fun update(uId: String, deviceName: String, command: Command): String {
         controller.connect()

@@ -10,9 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableAspectJAutoProxy
-class SmarthomeserverApplication : SpringBootServletInitializer() {
-
-}
+class SmarthomeserverApplication : SpringBootServletInitializer()
 
 fun main(args: Array<String>) {
     runApplication<SmarthomeserverApplication>(*args)
