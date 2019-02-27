@@ -1,7 +1,7 @@
 package com.home.smarthomeserver
 
-import com.home.smarthomeserver.models.ChildUser
-import com.home.smarthomeserver.models.ParentUser
+import com.home.smarthomeserver.entity.ChildUser
+import com.home.smarthomeserver.entity.ParentUser
 import com.home.smarthomeserver.security.JwtTokenProvider
 import com.home.smarthomeserver.security.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired

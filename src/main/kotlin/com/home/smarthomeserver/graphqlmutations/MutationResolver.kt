@@ -4,9 +4,9 @@ import com.coxautodev.graphql.tools.GraphQLMutationResolver
 import com.home.smarthomeserver.ChildUserRepository
 import com.home.smarthomeserver.UserService
 import com.home.smarthomeserver.controllers.DeviceController
-import com.home.smarthomeserver.models.ChildUser
+import com.home.smarthomeserver.entity.ChildUser
 import com.home.smarthomeserver.models.Command
-import com.home.smarthomeserver.models.ParentUser
+import com.home.smarthomeserver.entity.ParentUser
 import com.home.smarthomeserver.security.Unsecured
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder

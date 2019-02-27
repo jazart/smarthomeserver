@@ -1,5 +1,6 @@
-package com.home.smarthomeserver.models
+package com.home.smarthomeserver.entity
 
+import com.home.smarthomeserver.models.Command
 import javax.persistence.*
 
 
