@@ -8,8 +8,6 @@ import com.home.smarthomeserver.models.ChildUser
 import com.home.smarthomeserver.models.Command
 import com.home.smarthomeserver.models.ParentUser
 import com.home.smarthomeserver.security.Unsecured
-import org.hibernate.Transaction
-import org.hibernate.engine.transaction.internal.TransactionImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
@@ -37,8 +35,8 @@ class MutationResolver : GraphQLMutationResolver {
     }
 
     @Unsecured
-    fun signin(name: String, pass: String): String? {
-        return userService.signIn(name,pass)
+    fun login(name: String, pass: String): String? {
+        return userService.login(name,pass)
     }
 
     fun addChild(name: String, pass: String, parentName: String): String {
@@ -47,10 +45,6 @@ class MutationResolver : GraphQLMutationResolver {
         userService.addChild(user, child)
         return "Ok"
     }
-//    @Unsecured
-//    fun login(name: String, pass: String): String {
-//        return ""
-//    }
 
     fun update(uId: String, deviceName: String, command: Command): String {
         controller.connect()

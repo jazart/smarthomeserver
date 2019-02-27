@@ -3,10 +3,10 @@ package com.home.smarthomeserver
 import com.home.smarthomeserver.models.ChildUser
 import com.home.smarthomeserver.models.ParentUser
 import com.home.smarthomeserver.security.JwtTokenProvider
+import com.home.smarthomeserver.security.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.AuthenticationException
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 
 @Service
@@ -24,20 +24,21 @@ class UserService {
     @Autowired
     lateinit var authenticationManager: AuthenticationManager
 
+    @Autowired
+    lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
+
 
     @Throws(Exception::class)
-    fun signIn(name: String, password: String): String {
-        if (userRepository.existsUserByName(name)){
-            try {
-                authenticationManager.authenticate(UsernamePasswordAuthenticationToken(name, password))
+    fun login(name: String, password: String): String {
+        if (userRepository.existsUserByName(name)) {
+            val user = userDetailsServiceImpl.loadUserByUsername(name)
+            if (isValid(user, password)) {
                 return jwtTokenProvider.createToken(name)
-            } catch (e: AuthenticationException) {
-                throw Exception("Invalid username/password.")
             }
+        } else {
+            throw Exception("Invalid username/password")
         }
-        else{
-            throw Exception("User does not exist")
-        }
+        return ""
     }
 
     fun signUp(user: ParentUser): String {
@@ -53,4 +54,9 @@ class UserService {
         parent.family.add(child)
         userRepository.save(parent)
     }
+
+    fun isValid(user: UserDetails, password: String): Boolean =
+            user.password == password && user.isAccountNonExpired
+                    && user.isAccountNonLocked && user.isCredentialsNonExpired
+
 }
