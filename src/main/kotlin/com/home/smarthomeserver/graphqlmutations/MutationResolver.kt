@@ -36,6 +36,11 @@ class MutationResolver : GraphQLMutationResolver {
         return userService.signUp(user)
     }
 
+    @Unsecured
+    fun signin(name: String, pass: String): String? {
+        return userService.signIn(name,pass)
+    }
+
     fun addChild(name: String, pass: String, parentName: String): String {
         val user = userService.userRepository.findUserByName(parentName)
         val child = ChildUser(name = name, password = pass, parent = user)

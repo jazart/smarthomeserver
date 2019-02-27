@@ -27,11 +27,16 @@ class UserService {
 
     @Throws(Exception::class)
     fun signIn(name: String, password: String): String {
-        try {
-            authenticationManager.authenticate(UsernamePasswordAuthenticationToken(name, password))
-            return jwtTokenProvider.createToken(name)
-        } catch (e: AuthenticationException) {
-            throw Exception("Invalid username/password.")
+        if (userRepository.existsUserByName(name)){
+            try {
+                authenticationManager.authenticate(UsernamePasswordAuthenticationToken(name, password))
+                return jwtTokenProvider.createToken(name)
+            } catch (e: AuthenticationException) {
+                throw Exception("Invalid username/password.")
+            }
+        }
+        else{
+            throw Exception("User does not exist")
         }
     }
 
