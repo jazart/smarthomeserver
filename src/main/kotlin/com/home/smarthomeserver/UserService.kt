@@ -7,10 +7,14 @@ import com.home.smarthomeserver.security.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class UserService {
+
+    @Autowired
+    lateinit var encryptor: BCryptPasswordEncoder
 
     @Autowired
     lateinit var userRepository: ParentUserRepository
@@ -35,10 +39,11 @@ class UserService {
             if (isValid(user, password)) {
                 return jwtTokenProvider.createToken(name)
             }
+            throw Exception("Invalid username/password")
         } else {
             throw Exception("Invalid username/password")
         }
-        return ""
+        
     }
 
     fun signUp(user: ParentUser): String {
@@ -56,7 +61,7 @@ class UserService {
     }
 
     fun isValid(user: UserDetails, password: String): Boolean =
-            user.password == password && user.isAccountNonExpired
+            user.password == encryptor.encode(password) && user.isAccountNonExpired
                     && user.isAccountNonLocked && user.isCredentialsNonExpired
 
 }
