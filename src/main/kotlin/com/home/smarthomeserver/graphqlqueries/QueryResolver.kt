@@ -2,7 +2,7 @@ package com.home.smarthomeserver.graphqlqueries
 
 import com.coxautodev.graphql.tools.GraphQLQueryResolver
 import com.home.smarthomeserver.ParentUserRepository
-import com.home.smarthomeserver.models.Device
+import com.home.smarthomeserver.entity.Device
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

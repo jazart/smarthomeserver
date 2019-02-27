@@ -1,8 +1,8 @@
 package com.home.smarthomeserver
 
-import com.home.smarthomeserver.models.ChildUser
-import com.home.smarthomeserver.models.ParentUser
-import com.home.smarthomeserver.models.User
+import com.home.smarthomeserver.entity.ChildUser
+import com.home.smarthomeserver.entity.ParentUser
+import com.home.smarthomeserver.entity.User
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.NoRepositoryBean
 

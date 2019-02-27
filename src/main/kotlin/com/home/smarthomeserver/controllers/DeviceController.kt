@@ -1,7 +1,7 @@
 package com.home.smarthomeserver.controllers
 
 import com.amazonaws.services.iot.client.AWSIotConnectionStatus
-import com.home.smarthomeserver.models.Status
+import com.home.smarthomeserver.entity.Status
 import com.home.smarthomeserver.devices.RPILight
 import com.home.smarthomeserver.models.Command
 import org.springframework.beans.factory.annotation.Autowired
