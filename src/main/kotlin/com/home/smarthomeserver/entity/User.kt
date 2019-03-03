@@ -1,5 +1,7 @@
 package com.home.smarthomeserver.entity
 
+import com.home.smarthomeserver.models.ChildUserView
+import com.home.smarthomeserver.models.ParentUserView
 import javax.persistence.*
 
 
@@ -44,6 +46,16 @@ data class ChildUser(override var name: String,
                      @JoinColumn(name = "familyId")
                      var parent: ParentUser) : User
 
+fun ParentUser.toUserDomain() = ParentUserView(
+        name = this.name,
+        family = this.family,
+        devices = this.devices
+)
+
+fun ChildUser.toUserDomain() = ChildUserView(
+        name = this.name,
+        parent = this.parent
+)
 
 interface User {
 
