@@ -26,6 +26,8 @@ open class DeviceEntity(
 @Entity
 data class LightEntity(override var name: String = "LightEntity",
                        override val commands: MutableList<Command> = mutableListOf(Command.PULSE, Command.TURN_OFF, Command.TURN_ON),
+
+                       @Id @GeneratedValue(strategy = GenerationType.AUTO)
                        override val id: Long)
     : DeviceEntity(name, commands = commands, id = id)
 

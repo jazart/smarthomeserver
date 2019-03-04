@@ -52,8 +52,8 @@ dependencies {
     implementation 'com.graphql-java-kickstart:graphiql-spring-boot-starter:5.5.0'
 
     implementation('org.springframework.boot:spring-boot-starter-web')
-    runtime ('org.postgresql:postgresql')
-//    compile("org.postgresql:postgresql:9.4-1206-jdbc42")
+    runtime ('org.postgresql:postgresql:42.2.1')
+//    implementation "org.postgresql:postgresql:9.4-1211-jdbc42"
     implementation 'com.auth0:java-jwt:3.7.0'
     implementation('com.github.jmnarloch:modelmapper-spring-boot-starter:1.1.0')
 
