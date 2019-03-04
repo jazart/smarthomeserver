@@ -17,7 +17,7 @@ class Mapper(){
     @Autowired
     lateinit var userChildRepository: ChildUserRepository
     @Autowired
-    lateinit var deviceRepository: DeviceRepository<DeviceEntity>
+    lateinit var deviceRepository: DeviceRepository
 
     fun toUserEnity(currentUser: ParentUser): ParentUserEntity{
         val retrievedUser = userRepository.findUserByUsername(currentUser.username)
@@ -37,9 +37,9 @@ class Mapper(){
     }
 
     fun toDeviceEntity(device: Device): DeviceEntity {
-        val retrievedDevice = deviceRepository.findDeviceByID(device.id)
+        val retrievedDevice = deviceRepository.findDeviceEntityById(device.id)
         retrievedDevice?.status = device.status
         retrievedDevice?.commands = device.commands
-        return retrievedDevice ?:throw Exception("This should never happen")
+        return retrievedDevice ?: throw Exception("This should never happen")
     }
 }
