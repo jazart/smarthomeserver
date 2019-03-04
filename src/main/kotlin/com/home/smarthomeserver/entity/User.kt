@@ -1,7 +1,7 @@
 package com.home.smarthomeserver.entity
 
-import com.home.smarthomeserver.models.ChildUserView
-import com.home.smarthomeserver.models.ParentUserView
+import com.home.smarthomeserver.models.ChildUser
+import com.home.smarthomeserver.models.ParentUser
 import javax.persistence.*
 
 
@@ -14,47 +14,61 @@ import javax.persistence.*
  * For example the following class:
  *
  *  data class ParentUserEntity(id, name, password, children...) should be mapped -->
- *  -->data class ParentUser(name, children, ...)
+ *  -->data class ParentUserEntity(name, children, ...)
  *  This can be accomplished by creating a mapper class, creating a method called map() that takes an entity object
  *  and returns a model object.
  */
 
 @Entity(name = "parent_table")
-data class ParentUser(override var name: String = "J Payne",
+data class ParentUserEntity(
+        @Column(unique = true, updatable = false)
+        override val username: String,
 
-                      @Id @GeneratedValue(strategy = GenerationType.AUTO)
-                      override var id: Long = 0,
+        override var name: String = "J Payne",
 
-                      @OneToMany(cascade = [CascadeType.MERGE, CascadeType.REFRESH], fetch = FetchType.EAGER) var family: MutableList<ChildUser> = mutableListOf(),
+        @Id @GeneratedValue(strategy = GenerationType.AUTO)
+        override var id: Long,
 
-                      @Transient
-                      @ElementCollection
-                      var devices: MutableList<Device> = mutableListOf(Light()),
+        @OneToMany(cascade = [CascadeType.MERGE, CascadeType.REFRESH], fetch = FetchType.EAGER)
+        var family: MutableList<ChildUserEntity> = mutableListOf(),
 
-                      override var password: String) : User
+        @ElementCollection
+        @Column(nullable = false)
+        var devices: MutableList<DeviceEntity> = mutableListOf(),
+
+        override var password: String) : User
 
 @Entity(name = "child_table")
-data class ChildUser(override var name: String,
+data class ChildUserEntity(
+        @Column(unique = true, updatable = false)
+        override val username: String,
+        override var name: String,
 
-                     @Id
-                     @GeneratedValue(strategy = GenerationType.AUTO)
-                     override var id: Long = 0,
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        override var id: Long,
 
-                     override var password: String,
+        override var password: String,
 
-                     @ManyToOne(cascade = [CascadeType.MERGE, CascadeType.REFRESH])
-                     @JoinColumn(name = "familyId")
-                     var parent: ParentUser) : User
+        @ManyToOne(cascade = [CascadeType.MERGE, CascadeType.REFRESH])
+        @JoinColumn(name = "familyId")
+        var parent: ParentUserEntity) : User
 
-fun ParentUser.toUserDomain() = ParentUserView(
+fun ParentUserEntity.toUserDomain(): ParentUser {
+    val domainDevices = this.devices.map { dev -> dev.toDeviceDomain() }.toMutableList()
+    val familyDomain = this.family.map { fam -> fam.toUserDomain() }.toMutableList()
+    return ParentUser(
+            name = this.name,
+            family = familyDomain,
+            devices = domainDevices,
+            username = this.username
+    )
+}
+
+fun ChildUserEntity.toUserDomain() = ChildUser(
         name = this.name,
-        family = this.family,
-        devices = this.devices
-)
-
-fun ChildUser.toUserDomain() = ChildUserView(
-        name = this.name,
-        parent = this.parent
+        parent = this.parent.toUserDomain(),
+        username = this.username
 )
 
 interface User {
@@ -65,6 +79,8 @@ interface User {
     val name: String
         get() = ""
 
+    val username: String
+        get() = ""
     val password: String
         get() = ""
 

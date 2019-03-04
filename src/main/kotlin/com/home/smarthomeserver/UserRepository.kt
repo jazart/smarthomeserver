@@ -1,7 +1,7 @@
 package com.home.smarthomeserver
 
-import com.home.smarthomeserver.entity.ChildUser
-import com.home.smarthomeserver.entity.ParentUser
+import com.home.smarthomeserver.entity.ChildUserEntity
+import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.entity.User
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.NoRepositoryBean
@@ -13,12 +13,12 @@ interface UserRepository<T : User> : JpaRepository<T, String> {
     fun existsUserByName(name: String): Boolean
 }
 
-interface ParentUserRepository : UserRepository<ParentUser> {
+interface ParentUserRepository : UserRepository<ParentUserEntity> {
     override fun existsUserByName(name: String): Boolean
 
-    override fun findUserByName(name: String): ParentUser
+    override fun findUserByName(name: String): ParentUserEntity
 
 
 }
 
-interface ChildUserRepository : UserRepository<ChildUser>
+interface ChildUserRepository : UserRepository<ChildUserEntity>

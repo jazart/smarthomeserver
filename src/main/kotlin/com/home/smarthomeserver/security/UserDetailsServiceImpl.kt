@@ -15,7 +15,7 @@ class UserDetailsServiceImpl : UserDetailsService {
     lateinit var userRepository: ParentUserRepository
 
     override fun loadUserByUsername(username: String): UserDetails {
-        val user = userRepository.findUserByName(username) ?: throw UsernameNotFoundException("")
+        val user = userRepository.findUserByName(username)
         return User.builder().run {
             username(user.name)
             password(user.password)

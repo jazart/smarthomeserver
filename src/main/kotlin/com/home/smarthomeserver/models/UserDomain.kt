@@ -1,17 +1,14 @@
 package com.home.smarthomeserver.models
 
-import com.home.smarthomeserver.entity.*
+data class ParentUser(
+        val username: String,
+        val name: String,
+        val family: MutableList<ChildUser>,
+        val devices: MutableList<Device>
+)
 
-data class ParentUserView  (
-
-    val name: String,
-    val family: MutableList<ChildUser> = mutableListOf(),
-    val devices: MutableList<Device> = mutableListOf(Light())
-    )
-
-data class ChildUserView  (
-
+data class ChildUser(
+        val username: String,
         val name: String,
         val parent: ParentUser
-
 )
