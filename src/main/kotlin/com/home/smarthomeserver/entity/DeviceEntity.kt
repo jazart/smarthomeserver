@@ -16,16 +16,18 @@ open class DeviceEntity(
         open val id: Long,
 
         @Enumerated(EnumType.STRING)
-        open var status: Status = Status.DISCONNECTED,
+        open val status: Status = Status.DISCONNECTED,
 
         @ElementCollection
-        open var commands: MutableList<Command> = mutableListOf()
+        open val commands: MutableList<Command> = mutableListOf()
 )
 
 
 @Entity
 data class LightEntity(override var name: String = "LightEntity",
-                       override var commands: MutableList<Command> = mutableListOf(Command.PULSE, Command.TURN_OFF, Command.TURN_ON),
+                       override val commands: MutableList<Command> = mutableListOf(Command.PULSE, Command.TURN_OFF, Command.TURN_ON),
+
+                       @Id @GeneratedValue(strategy = GenerationType.AUTO)
                        override val id: Long)
     : DeviceEntity(name, commands = commands, id = id)
 

@@ -11,6 +11,8 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserService {
@@ -62,6 +64,8 @@ class UserService {
         userRepository.save(parent)
     }
 
+
+    @Transactional(propagation = Propagation.REQUIRED)
     fun getUserByName(username: String): ParentUser? = userRepository.findUserByName(username).toUserDomain()
 
     fun isValid(user: UserDetails, password: String): Boolean =
