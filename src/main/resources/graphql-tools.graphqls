@@ -4,31 +4,28 @@ type Query {
 }
 
 type Mutation {
-    signup(name: String, pass: String): String
+    signup(username: String, name: String, pass: String): String
     login(name: String, pass: String): String
     update(uId: String, deviceName: String, command: Command): String
-    addChild(name: String, pass: String, parentName: String): String
+    addChild(username: String, name: String, pass: String, parentName: String): String
 }
 
 interface User {
-    id: Long!
+    username: String!
     name: String!
-    password: String!
 }
 
 type ParentUser implements User {
+    username: String!
     name: String!
-    id: Long!
     family: [ChildUser]
     devices: [Device]
-    password: String!
 }
 
 type ChildUser implements User {
+    username: String!
     name: String!
-    id: Long!
     parent: ParentUser!
-    password: String!
 }
 
 

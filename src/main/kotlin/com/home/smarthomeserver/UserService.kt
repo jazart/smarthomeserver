@@ -1,7 +1,9 @@
 package com.home.smarthomeserver
 
-import com.home.smarthomeserver.entity.ChildUser
-import com.home.smarthomeserver.entity.ParentUser
+import com.home.smarthomeserver.entity.ChildUserEntity
+import com.home.smarthomeserver.entity.ParentUserEntity
+import com.home.smarthomeserver.entity.toUserDomain
+import com.home.smarthomeserver.models.ParentUser
 import com.home.smarthomeserver.security.JwtTokenProvider
 import com.home.smarthomeserver.security.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,7 +48,7 @@ class UserService {
         
     }
 
-    fun signUp(user: ParentUser): String {
+    fun signUp(user: ParentUserEntity): String {
         if (!userRepository.existsUserByName(user.name)) {
             userRepository.save(user)
             return jwtTokenProvider.createToken(user.name)
@@ -54,11 +56,13 @@ class UserService {
         return ""
     }
 
-    fun addChild(parent: ParentUser, child: ChildUser) {
+    fun addChild(parent: ParentUserEntity, child: ChildUserEntity) {
         childUserRepository.save(child)
         parent.family.add(child)
         userRepository.save(parent)
     }
+
+    fun getUserByName(username: String): ParentUser? = userRepository.findUserByName(username).toUserDomain()
 
     fun isValid(user: UserDetails, password: String): Boolean =
             user.password == encryptor.encode(password) && user.isAccountNonExpired

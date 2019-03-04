@@ -4,9 +4,9 @@ import com.coxautodev.graphql.tools.GraphQLMutationResolver
 import com.home.smarthomeserver.ChildUserRepository
 import com.home.smarthomeserver.UserService
 import com.home.smarthomeserver.controllers.DeviceController
-import com.home.smarthomeserver.entity.ChildUser
+import com.home.smarthomeserver.entity.ChildUserEntity
+import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.models.Command
-import com.home.smarthomeserver.entity.ParentUser
 import com.home.smarthomeserver.security.Unsecured
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -29,19 +29,20 @@ class MutationResolver : GraphQLMutationResolver {
     lateinit var childUserRepository: ChildUserRepository
 
     @Unsecured
-    fun signup(name: String, pass: String): String? {
-        val user = ParentUser(name = name, password = encoder.encode(pass))
+    fun signup(username: String, name: String, pass: String): String? {
+        val user = ParentUserEntity(name = name, password = encoder.encode(pass),
+                username = username, id = 0L)
         return userService.signUp(user)
     }
 
     @Unsecured
     fun login(name: String, pass: String): String? {
-        return userService.login(name,pass)
+        return userService.login(name, pass)
     }
 
-    fun addChild(name: String, pass: String, parentName: String): String {
+    fun addChild(username: String, name: String, pass: String, parentName: String): String {
         val user = userService.userRepository.findUserByName(parentName)
-        val child = ChildUser(name = name, password = pass, parent = user)
+        val child = ChildUserEntity(name = name, password = pass, parent = user, id = 0, username = username)
         userService.addChild(user, child)
         return "Ok"
     }
@@ -51,4 +52,6 @@ class MutationResolver : GraphQLMutationResolver {
         controller.updateDeviceStatus(uId, deviceName, command)
         return "Ok"
     }
+
+
 }

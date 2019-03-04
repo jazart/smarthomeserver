@@ -29,7 +29,7 @@ class JwtTokenProvider {
     fun getAuthentication(token: String): Authentication {
         val userName = getUsername(token)
         val details = userDetailsServiceImpl.loadUserByUsername(userName)
-        return UsernamePasswordAuthenticationToken(details, "", details.authorities)
+        return UsernamePasswordAuthenticationToken(details, details.password, details.authorities)
     }
 
     fun getUsername(token: String): String =
