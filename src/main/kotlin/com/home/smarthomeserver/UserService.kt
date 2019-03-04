@@ -66,7 +66,7 @@ class UserService {
 
 
     @Transactional(propagation = Propagation.REQUIRED)
-    fun getUserByName(username: String): ParentUser? = userRepository.findUserByName(username).toUserDomain()
+    fun getUserByName(username: String): ParentUser? = userRepository.findUserByUsername(username).toUserDomain()
 
     fun isValid(user: UserDetails, password: String): Boolean =
             user.password == encryptor.encode(password) && user.isAccountNonExpired
