@@ -16,7 +16,7 @@ class UserDetailsServiceImpl : UserDetailsService {
     override fun loadUserByUsername(username: String): UserDetails {
         val user = userRepository.findUserByUsername(username)
         return User.builder().run {
-            username(user.name)
+            username(user.username)
             password(user.password)
             accountExpired(false)
             accountLocked(false)

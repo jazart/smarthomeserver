@@ -17,9 +17,9 @@ class JwtTokenProvider {
     lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
 
 
-    fun createToken(name: String): String =
+    fun createToken(username: String): String =
             JWT.create().run {
-                withSubject(userDetailsServiceImpl.loadUserByUsername(name).username)
+                withSubject(userDetailsServiceImpl.loadUserByUsername(username).username)
                 withExpiresAt(Date(System.currentTimeMillis() + EXP_TIME))
                 withIssuer("Zenith")
                 sign(Algorithm.HMAC512(SECRET.toByteArray()))
