@@ -43,7 +43,7 @@ class MutationResolver : GraphQLMutationResolver {
     }
 
     fun addChild(username: String, name: String, pass: String, parentName: String): String {
-        val user = userService.userRepository.findUserByName(parentName)
+        val user = userService.userRepository.findUserByUsername(parentName)
         val child = ChildUserEntity(name = name, password = pass, parent = user, id = 0, username = username)
         userService.addChild(user, child)
         return "Ok"
@@ -54,6 +54,5 @@ class MutationResolver : GraphQLMutationResolver {
         controller.updateDeviceStatus(uId, deviceName, command)
         return "Ok"
     }
-
 
 }

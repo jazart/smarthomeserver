@@ -6,12 +6,11 @@ import com.home.smarthomeserver.ParentUserRepository
 import com.home.smarthomeserver.entity.ChildUserEntity
 import com.home.smarthomeserver.entity.DeviceEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
-import com.home.smarthomeserver.entity.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class Mapper(){
+class Mapper {
     @Autowired
     lateinit var userRepository: ParentUserRepository
     @Autowired
@@ -19,7 +18,7 @@ class Mapper(){
     @Autowired
     lateinit var deviceRepository: DeviceRepository
 
-    fun toUserEnity(currentUser: ParentUser): ParentUserEntity{
+    fun toParentEntity(currentUser: ParentUser): ParentUserEntity{
         val retrievedUser = userRepository.findUserByUsername(currentUser.username)
         retrievedUser.name = currentUser.name
         val children = currentUser.family.map { childUser ->  toChildUserEntity(childUser)}.toMutableList()
@@ -32,7 +31,7 @@ class Mapper(){
     fun toChildUserEntity(currentUser: ChildUser): ChildUserEntity {
         val retrievedUser = userChildRepository.findUserByUsername(currentUser.username)
         retrievedUser.name = currentUser.name
-        retrievedUser.parent = toUserEnity(currentUser.parent)
+        retrievedUser.parent = toParentEntity(currentUser.parent)
         return retrievedUser
     }
 
@@ -42,4 +41,5 @@ class Mapper(){
         retrievedDevice?.commands = device.commands
         return retrievedDevice ?: throw Exception("This should never happen")
     }
+
 }
