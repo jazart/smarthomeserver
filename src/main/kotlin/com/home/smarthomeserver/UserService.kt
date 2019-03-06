@@ -36,26 +36,27 @@ class UserService {
     lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
 
 
-    @Throws(Exception::class)
+    @Throws(SignupException::class)
     fun login(name: String, password: String): String {
-        if (userRepository.existsUserByName(name)) {
+        if (userRepository.existsParentUserEntityByUsername(name)) {
             val user = userDetailsServiceImpl.loadUserByUsername(name)
             if (isValid(user, password)) {
                 return jwtTokenProvider.createToken(name)
             }
-            throw Exception("Invalid username/password")
+            throw SignupException("Invalid username/password")
         } else {
-            throw Exception("Invalid username/password")
+            throw SignupException("Invalid username/password")
         }
         
     }
 
+    @Throws(SignupException::class)
     fun signUp(user: ParentUserEntity): String {
-        if (!userRepository.existsUserByName(user.name)) {
+        if (!userRepository.existsParentUserEntityByUsername(user.username)) {
             userRepository.save(user)
-            return jwtTokenProvider.createToken(user.name)
+            return jwtTokenProvider.createToken(user.username)
         }
-        return ""
+        throw SignupException("User already signed up")
     }
 
     fun addChild(parent: ParentUserEntity, child: ChildUserEntity) {

@@ -2,6 +2,7 @@ package com.home.smarthomeserver.graphqlmutations
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver
 import com.home.smarthomeserver.ChildUserRepository
+import com.home.smarthomeserver.SignupException
 import com.home.smarthomeserver.UserService
 import com.home.smarthomeserver.controllers.DeviceController
 import com.home.smarthomeserver.entity.ChildUserEntity
@@ -29,6 +30,7 @@ class MutationResolver : GraphQLMutationResolver {
     lateinit var childUserRepository: ChildUserRepository
 
     @Unsecured
+    @Throws(SignupException::class)
     fun signup(username: String, name: String, pass: String): String? {
         val user = ParentUserEntity(name = name, password = encoder.encode(pass),
                 username = username, id = 0L)
