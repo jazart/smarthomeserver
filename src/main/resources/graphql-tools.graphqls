@@ -1,32 +1,39 @@
 type Query {
-    user: User
+    user(name: String!): ParentUser!
     device: Device!
 }
 
 type Mutation {
-    signup(name: String, pass: String): String
+    signup(username: String, name: String, pass: String): String
+    login(name: String, pass: String): String
     update(uId: String, deviceName: String, command: Command): String
+    addChild(username: String, name: String, pass: String, parentName: String): String
 }
 
-type User {
+interface User {
+    username: String!
     name: String!
-    id: String!
-    family: [User]!
-    info: DeviceInformation!
+}
+
+type ParentUser implements User {
+    username: String!
+    name: String!
+    family: [ChildUser]
     devices: [Device]
 }
+
+type ChildUser implements User {
+    username: String!
+    name: String!
+    parent: ParentUser!
+}
+
 
 
 type Device {
     id: String!
     status: Status!
     name: String!
-    info: DeviceInformation!
-}
-
-type DeviceInformation{
-    name: String!
-    status: String!
     commands: [Command]!
 }
 

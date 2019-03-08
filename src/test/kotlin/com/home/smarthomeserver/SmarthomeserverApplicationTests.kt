@@ -45,24 +45,14 @@ class HelloWorldApplicationTests {
     private val mgt: Int = 0
 
     @Autowired
-    private val testRestTemplate: TestRestTemplate? = null
+    lateinit var testRestTemplate: TestRestTemplate
 
     @Test
     @Throws(Exception::class)
-    fun shouldReturn200WhenSendingRequestToController() {
-        val entity = this.testRestTemplate?.getForEntity(
-                "http://localhost:" + this.port + "/person", Map::class.java)
-
-        then(entity?.statusCode).isEqualTo(HttpStatus.OK)
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun shouldReturn200WhenSendingRequestToManagementEndpoint() {
-        val entity = this.testRestTemplate?.getForEntity(
+    fun `should return 403 forbidden when accessing any endpoint`() {
+        val entity = this.testRestTemplate.getForEntity(
                 "http://localhost:" + this.mgt + "/actuator/info", Map::class.java)
-
-        then(entity?.statusCode).isEqualTo(HttpStatus.OK)
+        then(entity?.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
     }
 
 }

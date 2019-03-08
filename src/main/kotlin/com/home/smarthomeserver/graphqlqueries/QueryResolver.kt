@@ -1,19 +1,26 @@
 package com.home.smarthomeserver.graphqlqueries
 
 import com.coxautodev.graphql.tools.GraphQLQueryResolver
-import com.home.smarthomeserver.Device
-import com.home.smarthomeserver.DeviceInformation
-import com.home.smarthomeserver.User
+import com.home.smarthomeserver.UserService
+import com.home.smarthomeserver.entity.Status
+import com.home.smarthomeserver.models.Device
+import com.home.smarthomeserver.models.ParentUser
+import org.springframework.stereotype.Component
 
-class DeviceResolver : GraphQLQueryResolver {
-    fun device() = Device()
+
+@Component
+class DeviceResolver : QueryResolver() {
+    fun device() = Device(name = "dev", id = 0, status = Status.DISCONNECTED, commands = mutableListOf())
 }
 
-class UserResolver : GraphQLQueryResolver {
-    fun user() = User()
+@Component
+class UserResolver(val userService: UserService) : QueryResolver() {
+
+
+    fun user(name: String): ParentUser {
+        return userService.getUserByName(name) ?: throw Exception("User not found.")
+    }
 }
 
-class DeviceInformationResolver : GraphQLQueryResolver {
-
-    fun deviceInfo() = DeviceInformation()
-}
+@Component
+abstract class QueryResolver : GraphQLQueryResolver

@@ -1,6 +1,8 @@
 branch-defaults:
   Query:
     environment: SmartHomeServer-env
+  auth:
+    environment: SmartHomeServer-env
   client:
     environment: SmartHomeServer-env
   master:

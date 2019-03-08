@@ -1,7 +1,7 @@
 package com.home.smarthomeserver.controllers
 
 import com.amazonaws.services.iot.client.AWSIotConnectionStatus
-import com.home.smarthomeserver.Status
+import com.home.smarthomeserver.entity.Status
 import com.home.smarthomeserver.devices.RPILight
 import com.home.smarthomeserver.models.Command
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +18,7 @@ class DeviceController {
     fun connect() {
         if (broker.client.connectionStatus == AWSIotConnectionStatus.DISCONNECTED) {
             println("Not connected yet --------> connecting ----------> NOW")
-            device.reportInterval = 1000L
+            device.reportInterval = 5000L
             broker.client.keepAliveInterval = 30_000
             broker.client.attach(device)
             broker.client.connect()
@@ -27,8 +27,9 @@ class DeviceController {
 
     fun updateDeviceStatus(@PathVariable("id") id: String, deviceName: String, command: Command) {
         device.command = command.toString()
+        device.status = Status.DISCONNECTED.toString()
         device.update("{ " +
-                "\"state\" : { " +
+                                    "\"state\" : { " +
                 "                       \"desired\": {" +
                 "                           \"command\": \"$command\"} " +
                 "                     } " +
