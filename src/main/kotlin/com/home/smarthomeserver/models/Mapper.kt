@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class Mapper {
+object Mapper {
     @Autowired
     lateinit var userRepository: ParentUserRepository
     @Autowired

@@ -47,7 +47,7 @@ class UserService {
         } else {
             throw SignupException("Invalid username/password")
         }
-        
+
     }
 
     @Throws(SignupException::class)
@@ -69,8 +69,9 @@ class UserService {
     @Transactional(propagation = Propagation.REQUIRED)
     fun getUserByName(username: String): ParentUser? = userRepository.findUserByUsername(username).toUserDomain()
 
-    fun isValid(user: UserDetails, password: String): Boolean =
-            user.password == encryptor.encode(password) && user.isAccountNonExpired
-                    && user.isAccountNonLocked && user.isCredentialsNonExpired
+    fun isValid(user: UserDetails, password: String): Boolean {
+        return encryptor.matches(password, user.password) && user.isAccountNonExpired
+                && user.isAccountNonLocked && user.isCredentialsNonExpired
+    }
 
 }

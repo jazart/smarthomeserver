@@ -2,13 +2,16 @@ package com.home.smarthomeserver.graphqlmutations
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver
 import com.home.smarthomeserver.ChildUserRepository
+import com.home.smarthomeserver.DeviceService
 import com.home.smarthomeserver.SignupException
 import com.home.smarthomeserver.UserService
-import com.home.smarthomeserver.controllers.DeviceController
 import com.home.smarthomeserver.entity.ChildUserEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.models.Command
+import com.home.smarthomeserver.models.Device
+import com.home.smarthomeserver.models.ParentUser
 import com.home.smarthomeserver.security.Unsecured
+import graphql.GraphQLException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
@@ -18,7 +21,7 @@ import org.springframework.stereotype.Component
 class MutationResolver : GraphQLMutationResolver {
 
     @Autowired
-    lateinit var controller: DeviceController
+    lateinit var deviceService: DeviceService
 
     @Autowired
     lateinit var userService: UserService
@@ -38,6 +41,7 @@ class MutationResolver : GraphQLMutationResolver {
     }
 
     @Unsecured
+    @Throws(SignupException::class)
     fun login(name: String, pass: String): String? {
         return userService.login(name, pass)
     }
@@ -49,10 +53,18 @@ class MutationResolver : GraphQLMutationResolver {
         return "Ok"
     }
 
+    @Unsecured
     fun update(uId: String, deviceName: String, command: Command): String {
-        controller.connect()
-        controller.updateDeviceStatus(uId, deviceName, command)
+        deviceService.run {
+            connect()
+            updateDeviceStatus(uId, deviceName, command)
+        }
         return "Ok"
+    }
+
+    @Throws(GraphQLException::class)
+    fun addDevice(username: ParentUser, deviceName: String, device: Device) {
+
     }
 
 }

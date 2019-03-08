@@ -1,5 +1,6 @@
 package com.home.smarthomeserver.graphqlqueries
 
+import com.auth0.jwt.exceptions.JWTVerificationException
 import com.coxautodev.graphql.tools.GraphQLQueryResolver
 import com.home.smarthomeserver.UserService
 import com.home.smarthomeserver.entity.Status
@@ -17,6 +18,7 @@ class DeviceResolver : QueryResolver() {
 class UserResolver(val userService: UserService) : QueryResolver() {
 
 
+    @Throws(JWTVerificationException::class)
     fun user(name: String): ParentUser {
         return userService.getUserByName(name) ?: throw Exception("User not found.")
     }
