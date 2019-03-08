@@ -7,9 +7,7 @@ import com.home.smarthomeserver.SignupException
 import com.home.smarthomeserver.UserService
 import com.home.smarthomeserver.entity.ChildUserEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
-import com.home.smarthomeserver.models.Command
-import com.home.smarthomeserver.models.Device
-import com.home.smarthomeserver.models.ParentUser
+import com.home.smarthomeserver.models.*
 import com.home.smarthomeserver.security.Unsecured
 import graphql.GraphQLException
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,11 +30,21 @@ class MutationResolver : GraphQLMutationResolver {
     @Autowired
     lateinit var childUserRepository: ChildUserRepository
 
+//    @Unsecured
+//    @Throws(SignupException::class)
+//    fun signup(username: String, firstName: String, lastName: String, pass: String, email: String): String? {
+//        val user = ParentUserEntity(firstName = firstName, lastName = lastName, password = encoder.encode(pass),
+//                username = username, id = 0L, email = email)
+//        return userService.signUp(user)
+//    }
+
     @Unsecured
     @Throws(SignupException::class)
-    fun signup(username: String, name: String, pass: String): String? {
-        val user = ParentUserEntity(name = name, password = encoder.encode(pass),
-                username = username, id = 0L)
+    fun signup(creds: Credential, info: Personal): String? {
+        val user = ParentUserEntity(firstName = info.firstName,
+                lastName = info.lastName,
+                password = encoder.encode(creds.password),
+                username = creds.username, id = 0L, email = info.email)
         return userService.signUp(user)
     }
 
@@ -46,9 +54,9 @@ class MutationResolver : GraphQLMutationResolver {
         return userService.login(name, pass)
     }
 
-    fun addChild(username: String, name: String, pass: String, parentName: String): String {
+    fun addChild(username: String, firstName: String, lastName: String, pass: String, parentName: String, email: String): String {
         val user = userService.userRepository.findUserByUsername(parentName)
-        val child = ChildUserEntity(name = name, password = pass, parent = user, id = 0, username = username)
+        val child = ChildUserEntity(firstName = firstName, lastName = lastName, password = pass, parent = user, id = 0, username = username, email = email)
         userService.addChild(user, child)
         return "Ok"
     }

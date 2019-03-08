@@ -24,7 +24,11 @@ data class ParentUserEntity(
         @Column(unique = true, updatable = false)
         override val username: String,
 
-        override var name: String = "J Payne",
+        @Column(updatable = false, nullable = false)
+        override val firstName: String = "",
+
+        @Column(updatable = false, nullable = false)
+        override val lastName: String = "",
 
         @Id @GeneratedValue(strategy = GenerationType.AUTO)
         override var id: Long,
@@ -32,9 +36,12 @@ data class ParentUserEntity(
         @OneToMany(cascade = [CascadeType.MERGE, CascadeType.REFRESH], fetch = FetchType.EAGER)
         var family: MutableList<ChildUserEntity> = mutableListOf(),
 
-        @ElementCollection
+        @OneToMany(cascade = [CascadeType.MERGE, CascadeType.REFRESH], fetch = FetchType.LAZY)
         @Column(nullable = false)
         var devices: MutableList<DeviceEntity> = mutableListOf(),
+
+        @Column(nullable = false, unique = true)
+        override val email: String,
 
         override var password: String) : User
 
@@ -42,11 +49,19 @@ data class ParentUserEntity(
 data class ChildUserEntity(
         @Column(unique = true, updatable = false)
         override val username: String,
-        override var name: String,
+
+        @Column(updatable = false, nullable = false)
+        override val firstName: String = "",
+
+        @Column(updatable = false, nullable = false)
+        override val lastName: String = "",
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
         override var id: Long,
+
+        @Column(nullable = false, unique = true)
+        override val email: String,
 
         override var password: String,
 
@@ -55,19 +70,23 @@ data class ChildUserEntity(
         var parent: ParentUserEntity) : User
 
 fun ParentUserEntity.toUserDomain(): ParentUser {
-    val domainDevices = this.devices.map { dev -> dev.toDeviceDomain() }.toMutableList()
-    val familyDomain = this.family.map { fam -> fam.toUserDomain() }.toMutableList()
-    return ParentUser(
-            name = this.name,
-            family = familyDomain,
-            devices = domainDevices,
+    val parentUserDomain = ParentUser(
+            firstName = this.firstName,
+            lastName = this.lastName,
             username = this.username
     )
+
+    val domainDevices = this.devices.map { dev -> dev.toDeviceDomain(parentUserDomain) }.toMutableList()
+    parentUserDomain.devices.addAll(domainDevices)
+    val familyDomain = this.family.map { fam -> fam.toUserDomain(parentUserDomain) }.toMutableList()
+    parentUserDomain.family.addAll(familyDomain)
+    return parentUserDomain
 }
 
-fun ChildUserEntity.toUserDomain() = ChildUser(
-        name = this.name,
-        parent = this.parent.toUserDomain(),
+fun ChildUserEntity.toUserDomain(parent: ParentUser) = ChildUser(
+        firstName = this.firstName,
+        lastName = this.lastName,
+        parent = parent,
         username = this.username
 )
 
@@ -76,12 +95,19 @@ interface User {
     val id: Long
         get() = 0
 
-    val name: String
+    val firstName: String
+        get() = ""
+
+    val lastName: String
         get() = ""
 
     val username: String
         get() = ""
     val password: String
         get() = ""
+
+    val email: String
+        get() = ""
+
 
 }
