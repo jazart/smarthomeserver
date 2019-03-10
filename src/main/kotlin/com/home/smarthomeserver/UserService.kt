@@ -6,7 +6,11 @@ import com.home.smarthomeserver.entity.toUserDomain
 import com.home.smarthomeserver.models.ParentUser
 import com.home.smarthomeserver.security.JwtTokenProvider
 import com.home.smarthomeserver.security.UserDetailsServiceImpl
+import org.hibernate.validator.cfg.defs.EmailDef
+import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.mail.MailSender
+import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -56,6 +60,8 @@ class UserService {
             userRepository.save(user)
             return jwtTokenProvider.createToken(user.username)
         }
+
+        val mail = JavaMailSenderImpl()
         throw SignupException("User already signed up")
     }
 
