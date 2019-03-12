@@ -6,7 +6,11 @@ import com.home.smarthomeserver.entity.toUserDomain
 import com.home.smarthomeserver.models.ParentUser
 import com.home.smarthomeserver.security.JwtTokenProvider
 import com.home.smarthomeserver.security.UserDetailsServiceImpl
+import org.hibernate.validator.cfg.defs.EmailDef
+import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.mail.MailSender
+import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -47,7 +51,7 @@ class UserService {
         } else {
             throw SignupException("Invalid username/password")
         }
-        
+
     }
 
     @Throws(SignupException::class)
@@ -56,6 +60,8 @@ class UserService {
             userRepository.save(user)
             return jwtTokenProvider.createToken(user.username)
         }
+
+        val mail = JavaMailSenderImpl()
         throw SignupException("User already signed up")
     }
 
@@ -69,8 +75,9 @@ class UserService {
     @Transactional(propagation = Propagation.REQUIRED)
     fun getUserByName(username: String): ParentUser? = userRepository.findUserByUsername(username).toUserDomain()
 
-    fun isValid(user: UserDetails, password: String): Boolean =
-            user.password == encryptor.encode(password) && user.isAccountNonExpired
-                    && user.isAccountNonLocked && user.isCredentialsNonExpired
+    fun isValid(user: UserDetails, password: String): Boolean {
+        return encryptor.matches(password, user.password) && user.isAccountNonExpired
+                && user.isAccountNonLocked && user.isCredentialsNonExpired
+    }
 
 }

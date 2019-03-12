@@ -12,7 +12,9 @@ data class Device  (
         @ElementCollection
         val commands: MutableList<Command>,
 
-        val id: Long
+        val id: Long,
+
+        val owner: ParentUser = ParentUser()
 
 )
 

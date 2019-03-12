@@ -1,5 +1,7 @@
 package com.home.smarthomeserver.security
 
+import com.auth0.jwt.exceptions.JWTVerificationException
+import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.filter.OncePerRequestFilter
@@ -11,11 +13,12 @@ import javax.servlet.http.HttpServletResponse
 class JWTAuthorizationFilter(private val jwtTokenProvider: JwtTokenProvider)
     : OncePerRequestFilter() {
 
-    @Throws(UsernameNotFoundException::class)
+    @Throws(UsernameNotFoundException::class, JWTVerificationException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
         val token = jwtTokenProvider.resolveToken(request)
         if (token != null && jwtTokenProvider.validateToken(token)) {
-            SecurityContextHolder.getContext().authentication = jwtTokenProvider.getAuthentication(token)
+            val auth = jwtTokenProvider.getAuthentication(token)
+            SecurityContextHolder.getContext().authentication = auth
         }
         chain.doFilter(request,response)
     }

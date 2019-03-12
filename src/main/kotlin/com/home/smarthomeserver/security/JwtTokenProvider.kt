@@ -2,7 +2,10 @@ package com.home.smarthomeserver.security
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.auth0.jwt.exceptions.JWTVerificationException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Bean
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
@@ -16,10 +19,10 @@ class JwtTokenProvider {
     @Autowired
     lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
 
-
     fun createToken(username: String): String =
             JWT.create().run {
                 withSubject(userDetailsServiceImpl.loadUserByUsername(username).username)
+                withIssuedAt(Date())
                 withExpiresAt(Date(System.currentTimeMillis() + EXP_TIME))
                 withIssuer("Zenith")
                 sign(Algorithm.HMAC512(SECRET.toByteArray()))
@@ -43,12 +46,14 @@ class JwtTokenProvider {
         } else null
     }
 
+    @Throws(JWTVerificationException::class)
     fun validateToken(token: String): Boolean {
         try {
-            JWT.require(Algorithm.HMAC512(SECRET)).withIssuer("Zenith").withSubject(getUsername(token))
+            val verifier = JWT.require(Algorithm.HMAC512(SECRET)).withIssuer("Zenith").withSubject(getUsername(token)).build()
+            verifier.verify(token)
             return true
-        } catch (e: IllegalArgumentException) {
-            throw Exception("Expired or invalid JWT token")
+        } catch (e: JWTVerificationException) {
+            throw JWTVerificationException("Expired or invalid JWT token")
         }
 
     }

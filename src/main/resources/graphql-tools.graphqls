@@ -4,31 +4,31 @@ type Query {
 }
 
 type Mutation {
-    signup(username: String, name: String, pass: String): String
+    signup(creds: Credential, info: Personal): String
     login(name: String, pass: String): String
     update(uId: String, deviceName: String, command: Command): String
-    addChild(username: String, name: String, pass: String, parentName: String): String
+    addChild(username: String, firstName: String, lastName: String, pass: String, parentName: String, email: String): String
 }
 
 interface User {
     username: String!
-    name: String!
-}
+    firstName: String!
+    lastName: String!}
 
 type ParentUser implements User {
     username: String!
-    name: String!
+    firstName: String!
+    lastName: String!
     family: [ChildUser]
     devices: [Device]
 }
 
 type ChildUser implements User {
     username: String!
-    name: String!
+    firstName: String!
+    lastName: String!
     parent: ParentUser!
 }
-
-
 
 type Device {
     id: String!
@@ -47,4 +47,15 @@ enum Command {
     TURN_OFF
     TURN_ON
     PULSE
+}
+
+input Credential {
+    username: String!
+    password: String!
+}
+
+input Personal {
+    firstName: String!
+    lastName: String!
+    email: String!
 }

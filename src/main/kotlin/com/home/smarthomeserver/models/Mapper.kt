@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class Mapper {
+object Mapper {
     @Autowired
     lateinit var userRepository: ParentUserRepository
     @Autowired
@@ -20,7 +20,6 @@ class Mapper {
 
     fun toParentEntity(currentUser: ParentUser): ParentUserEntity{
         val retrievedUser = userRepository.findUserByUsername(currentUser.username)
-        retrievedUser.name = currentUser.name
         val children = currentUser.family.map { childUser ->  toChildUserEntity(childUser)}.toMutableList()
         retrievedUser.family = children
         val devices = currentUser.devices.map { device -> toDeviceEntity(device)}.toMutableList()
@@ -30,7 +29,6 @@ class Mapper {
 
     fun toChildUserEntity(currentUser: ChildUser): ChildUserEntity {
         val retrievedUser = userChildRepository.findUserByUsername(currentUser.username)
-        retrievedUser.name = currentUser.name
         retrievedUser.parent = toParentEntity(currentUser.parent)
         return retrievedUser
     }
