@@ -56,7 +56,11 @@ class DeviceService {
         deviceRepository.delete(deviceRepository.findDeviceEntityById(id.toLong())!!)
     }
 
-    fun modifyDName(id: String, deviceName: String){
-        deviceRepository.findDeviceEntityById(id.toLong())!!.name = deviceName
+    fun modifyDeviceName(id: String, deviceName: String){
+        deviceRepository.findDeviceEntityById(id.toLong())?.name = deviceName
+
+        deviceRepository.findDeviceEntityById(id.toLong())?.let { device ->
+            deviceRepository.save(device)
+        }
     }
 }

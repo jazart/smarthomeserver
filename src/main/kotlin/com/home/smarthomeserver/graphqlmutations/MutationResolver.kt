@@ -81,7 +81,7 @@ class MutationResolver : GraphQLMutationResolver {
         deviceService.removeDevice(dID)
     }
 
-    fun modifyDName(dID: String, deviceName: String){
-        deviceService.modifyDName(dID,deviceName)
+    fun modifyDeviceName(dId: String, deviceName: String){
+        deviceService.modifyDeviceName(dId,deviceName)
     }
 }
