@@ -8,6 +8,8 @@ type Mutation {
     login(name: String, pass: String): String
     update(uId: String, deviceName: String, command: Command): String
     addChild(username: String, firstName: String, lastName: String, pass: String, parentName: String, email: String): String
+    removeDevice(username: String, dID: String, deviceName: String): String
+    modifyDName(dID: String, deviceName: String): String
 }
 
 interface User {

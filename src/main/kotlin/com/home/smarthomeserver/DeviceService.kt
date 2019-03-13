@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable
 class DeviceService {
     @Autowired
     lateinit var broker: AwsBroker
+
+    @Autowired
+    lateinit var deviceRepository: DeviceRepository
+
     val device = RPILight("MyRaspberryPi")
     val device2 = RPILight("TestCreation")
 
@@ -46,5 +50,13 @@ class DeviceService {
                 "                     } " +
                 "               }")
         println("==========connected=================")
+    }
+
+    fun removeDevice(id: String){
+        deviceRepository.delete(deviceRepository.findDeviceEntityById(id.toLong())!!)
+    }
+
+    fun modifyDName(id: String, deviceName: String){
+        deviceRepository.findDeviceEntityById(id.toLong())!!.name = deviceName
     }
 }

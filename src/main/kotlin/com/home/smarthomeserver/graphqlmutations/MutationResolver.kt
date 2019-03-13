@@ -75,4 +75,13 @@ class MutationResolver : GraphQLMutationResolver {
 
     }
 
+    @Unsecured
+    @Throws(GraphQLException::class)
+    fun removeDevice(username: String, dID: String, deviceName: String){
+        deviceService.removeDevice(dID)
+    }
+
+    fun modifyDName(dID: String, deviceName: String){
+        deviceService.modifyDName(dID,deviceName)
+    }
 }
