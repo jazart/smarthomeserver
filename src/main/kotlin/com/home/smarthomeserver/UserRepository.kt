@@ -16,6 +16,7 @@ interface UserRepository<T : User> : JpaRepository<T, String> {
 interface ParentUserRepository : UserRepository<ParentUserEntity> {
     fun existsParentUserEntityByUsername(name: String): Boolean
     override fun findUserByUsername(username: String): ParentUserEntity
+    fun existsParentUserEntityByEmail(email: String): Boolean
 
 }
 

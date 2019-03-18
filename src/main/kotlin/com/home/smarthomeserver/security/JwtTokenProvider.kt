@@ -49,7 +49,11 @@ class JwtTokenProvider {
     @Throws(JWTVerificationException::class)
     fun validateToken(token: String): Boolean {
         try {
-            val verifier = JWT.require(Algorithm.HMAC512(SECRET)).withIssuer("Zenith").withSubject(getUsername(token)).build()
+            val verifier = JWT.require(Algorithm.HMAC512(SECRET))
+                    .withIssuer("Zenith")
+                    .withSubject(getUsername(token))
+                    .acceptExpiresAt(EXP_LEEWAY)
+                    .build()
             verifier.verify(token)
             return true
         } catch (e: JWTVerificationException) {
@@ -63,5 +67,6 @@ class JwtTokenProvider {
         const val EXP_TIME = 864_000_000
         const val TOKEN_PREFIX = "Bearer "
         const val HEADER_STRING = "Authorization"
+        const val EXP_LEEWAY = 180_000L
     }
 }

@@ -1,4 +1,4 @@
-package com.home.smarthomeserver.security
+package com.home.smarthomeserver
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.jdbc.DataSourceBuilder

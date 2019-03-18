@@ -25,25 +25,14 @@ class MutationResolver : GraphQLMutationResolver {
     lateinit var userService: UserService
 
     @Autowired
-    lateinit var encoder: BCryptPasswordEncoder
-
-    @Autowired
     lateinit var childUserRepository: ChildUserRepository
-
-//    @Unsecured
-//    @Throws(SignupException::class)
-//    fun signup(username: String, firstName: String, lastName: String, pass: String, email: String): String? {
-//        val user = ParentUserEntity(firstName = firstName, lastName = lastName, password = encoder.encode(pass),
-//                username = username, id = 0L, email = email)
-//        return userService.signUp(user)
-//    }
 
     @Unsecured
     @Throws(SignupException::class)
     fun signup(creds: Credential, info: Personal): String? {
         val user = ParentUserEntity(firstName = info.firstName,
                 lastName = info.lastName,
-                password = encoder.encode(creds.password),
+                password = creds.password,
                 username = creds.username, id = 0L, email = info.email)
         return userService.signUp(user)
     }

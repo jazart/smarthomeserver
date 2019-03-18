@@ -6,11 +6,7 @@ import com.home.smarthomeserver.entity.toUserDomain
 import com.home.smarthomeserver.models.ParentUser
 import com.home.smarthomeserver.security.JwtTokenProvider
 import com.home.smarthomeserver.security.UserDetailsServiceImpl
-import org.hibernate.validator.cfg.defs.EmailDef
-import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.mail.MailSender
-import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -22,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserService {
 
     @Autowired
-    lateinit var encryptor: BCryptPasswordEncoder
+    lateinit var passwordEncoder: BCryptPasswordEncoder
 
     @Autowired
     lateinit var userRepository: ParentUserRepository
@@ -56,13 +52,16 @@ class UserService {
 
     @Throws(SignupException::class)
     fun signUp(user: ParentUserEntity): String {
-        if (!userRepository.existsParentUserEntityByUsername(user.username)) {
-            userRepository.save(user)
-            return jwtTokenProvider.createToken(user.username)
+        isPasswordValid(user.password)
+        user.password = passwordEncoder.encode(user.password)
+        when {
+            userRepository.existsParentUserEntityByUsername(user.username) -> throw SignupException("User already signed up")
+            userRepository.existsParentUserEntityByEmail(user.email) -> throw SignupException("Email is taken")
+            else -> {
+                userRepository.save(user)
+                return jwtTokenProvider.createToken(user.username)
+            }
         }
-
-        val mail = JavaMailSenderImpl()
-        throw SignupException("User already signed up")
     }
 
     fun addChild(parent: ParentUserEntity, child: ChildUserEntity) {
@@ -75,9 +74,13 @@ class UserService {
     @Transactional(propagation = Propagation.REQUIRED)
     fun getUserByName(username: String): ParentUser? = userRepository.findUserByUsername(username).toUserDomain()
 
-    fun isValid(user: UserDetails, password: String): Boolean {
-        return encryptor.matches(password, user.password) && user.isAccountNonExpired
-                && user.isAccountNonLocked && user.isCredentialsNonExpired
-    }
+    fun isValid(user: UserDetails, password: String): Boolean =
+            (passwordEncoder.matches(password, user.password) && user.isAccountNonExpired
+                    && user.isAccountNonLocked && user.isCredentialsNonExpired)
 
+    @Throws(SignupException::class)
+    fun isPasswordValid(password: String): Boolean {
+        PasswordValidator.isValid(password)?.let { throw SignupException(it.joinToString("\n")) }
+        return true
+    }
 }
