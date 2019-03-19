@@ -10,9 +10,11 @@ import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.models.*
 import com.home.smarthomeserver.security.Unsecured
 import graphql.GraphQLException
+import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
+import software.amazon.awssdk.services.iot.model.ResourceAlreadyExistsException
+import software.amazon.awssdk.services.iot.model.ThrottlingException
 
 
 @Component
@@ -26,6 +28,8 @@ class MutationResolver : GraphQLMutationResolver {
 
     @Autowired
     lateinit var childUserRepository: ChildUserRepository
+
+    private val mutationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     @Unsecured
     @Throws(SignupException::class)
@@ -66,11 +70,36 @@ class MutationResolver : GraphQLMutationResolver {
 
     @Unsecured
     @Throws(GraphQLException::class)
-    fun removeDevice(username: String, dID: String, deviceName: String){
-        deviceService.removeDevice(dID)
+    fun removeDevice(username: String, deviceName: String): Boolean {
+        try {
+            deviceService.removeDevice(username, deviceName)
+            return true
+        } catch (e: NoSuchElementException) {
+            return false
+        }
     }
 
-    fun modifyDeviceName(dId: String, deviceName: String){
-        deviceService.modifyDeviceName(dId,deviceName)
+    fun modifyDeviceName(dId: String, deviceName: String) {
+        deviceService.modifyDeviceName(dId, deviceName)
+    }
+
+    @Unsecured
+    fun addDevice(username: String, device: String): Boolean {
+        if (username.isBlank() || !userService.userRepository.existsParentUserEntityByUsername(username)) {
+            throw Exception("Could not create device. User '$username' not found.")
+        }
+        mutationScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    deviceService.connect()
+                    deviceService.addDevice(username, device)
+                }
+            } catch (e: ThrottlingException) {
+
+            } catch (e: ResourceAlreadyExistsException) {
+                throw Exception("The device $device already exists in your device group.")
+            }
+        }
+        return true
     }
 }

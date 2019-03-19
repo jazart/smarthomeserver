@@ -48,6 +48,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation 'com.amazonaws:aws-iot-device-sdk-java:1.2.0'
+    implementation 'software.amazon.awssdk:iot:2.5.10'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
     
     implementation 'com.graphql-java-kickstart:graphql-spring-boot-starter:5.5.0'
