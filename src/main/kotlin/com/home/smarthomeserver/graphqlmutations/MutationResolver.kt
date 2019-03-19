@@ -70,13 +70,16 @@ class MutationResolver : GraphQLMutationResolver {
 
     @Unsecured
     @Throws(GraphQLException::class)
-    fun removeDevice(username: String, deviceName: String): Boolean {
-        try {
-            deviceService.removeDevice(username, deviceName)
-            return true
-        } catch (e: NoSuchElementException) {
-            return false
-        }
+    suspend fun removeDevice(username: String, deviceName: String): Boolean {
+        return mutationScope.async {
+            withContext(Dispatchers.IO) {
+                try {
+                    return@withContext deviceService.removeDevice(username, deviceName)
+                } catch (e: NoSuchElementException) {
+                    return@withContext false
+                }
+            }
+        }.await()
     }
 
     fun modifyDeviceName(dId: String, deviceName: String) {

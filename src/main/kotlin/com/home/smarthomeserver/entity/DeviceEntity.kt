@@ -18,11 +18,12 @@ open class DeviceEntity(
         @Enumerated(EnumType.STRING)
         open var status: Status = Status.DISCONNECTED,
 
-        @ElementCollection
+        @Enumerated(EnumType.STRING)
+        @ElementCollection(targetClass = Command::class)
         open var commands: MutableList<Command> = mutableListOf(),
 
         @ManyToOne(cascade = [CascadeType.REFRESH, CascadeType.MERGE])
-        @JoinColumn(name = "devices")
+        @JoinColumn(name = "parent_id")
         open var owner: ParentUserEntity
 
 )

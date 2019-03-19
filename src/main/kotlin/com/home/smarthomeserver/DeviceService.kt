@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import software.amazon.awssdk.services.iot.model.AttributePayload
 import software.amazon.awssdk.services.iot.model.CreateThingRequest
+import software.amazon.awssdk.services.iot.model.DeleteThingRequest
 
 @Service
 class DeviceService {
@@ -58,7 +59,7 @@ class DeviceService {
             build()
         }).await()
         if (thingResponse.sdkHttpResponse().isSuccessful) {
-            val user = userService.getUserEntity(username, true)
+            val user = userService.getUserEntity(username)
             val deviceEntity = DeviceEntity(name = device, commands = mutableListOf(), id = 1L, owner = user)
             user.devices.add(deviceEntity)
             userService.userRepository.save(user)
@@ -67,13 +68,16 @@ class DeviceService {
     }
 
     @Transactional
-    fun removeDevice(username: String, deviceName: String) {
+    suspend fun removeDevice(username: String, deviceName: String): Boolean {
         val user = userService.getUserEntity(username)
         user.apply {
             val deviceToRemove = devices.first { device -> device.name == deviceName }
             devices.remove(deviceToRemove)
             userService.userRepository.save(this)
             deviceRepository.findDeviceEntityById(deviceToRemove.id)?.let { deviceRepository.delete(it) }
+            return AwsIotClient.get().deleteThing(
+                    DeleteThingRequest.builder().thingName(deviceName).build()
+            ).await().sdkHttpResponse().isSuccessful
         }
     }
 
