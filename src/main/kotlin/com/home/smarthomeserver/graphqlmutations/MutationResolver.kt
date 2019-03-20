@@ -57,7 +57,6 @@ class MutationResolver : GraphQLMutationResolver {
     @Unsecured
     fun update(uId: String, deviceName: String, command: Command): String {
         deviceService.run {
-            connect()
             updateDeviceStatus(uId, deviceName, command)
         }
         return "Ok"
@@ -87,22 +86,21 @@ class MutationResolver : GraphQLMutationResolver {
     }
 
     @Unsecured
-    fun addDevice(username: String, device: String): Boolean {
+    @Throws(Exception::class)
+    suspend fun addDevice(username: String, device: String): Boolean {
         if (username.isBlank() || !userService.userRepository.existsParentUserEntityByUsername(username)) {
             throw Exception("Could not create device. User '$username' not found.")
         }
-        mutationScope.launch {
+        return mutationScope.async {
             try {
                 withContext(Dispatchers.IO) {
-                    deviceService.connect()
-                    deviceService.addDevice(username, device)
+                    return@withContext deviceService.addDevice(username, device)
                 }
             } catch (e: ThrottlingException) {
-
+                return@async false
             } catch (e: ResourceAlreadyExistsException) {
                 throw Exception("The device $device already exists in your device group.")
             }
-        }
-        return true
+        }.await()
     }
 }

@@ -7,7 +7,6 @@ import com.home.smarthomeserver.models.ParentUser
 import com.home.smarthomeserver.security.JwtTokenProvider
 import com.home.smarthomeserver.security.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
@@ -28,9 +27,6 @@ class UserService {
 
     @Autowired
     lateinit var jwtTokenProvider: JwtTokenProvider
-
-    @Autowired
-    lateinit var authenticationManager: AuthenticationManager
 
     @Autowired
     lateinit var userDetailsServiceImpl: UserDetailsServiceImpl

@@ -6,6 +6,7 @@ import com.home.smarthomeserver.UserService
 import com.home.smarthomeserver.entity.Status
 import com.home.smarthomeserver.models.Device
 import com.home.smarthomeserver.models.ParentUser
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 
@@ -15,8 +16,9 @@ class DeviceResolver : QueryResolver() {
 }
 
 @Component
-class UserResolver(val userService: UserService) : QueryResolver() {
-
+class UserResolver : QueryResolver() {
+    @Autowired
+    lateinit var userService: UserService
 
     @Throws(JWTVerificationException::class)
     fun user(name: String): ParentUser {
@@ -25,4 +27,4 @@ class UserResolver(val userService: UserService) : QueryResolver() {
 }
 
 @Component
-abstract class QueryResolver : GraphQLQueryResolver
+class QueryResolver : GraphQLQueryResolver

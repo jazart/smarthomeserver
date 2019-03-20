@@ -1,7 +1,6 @@
 package com.home.smarthomeserver.security
 
 import com.auth0.jwt.exceptions.JWTVerificationException
-import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.filter.OncePerRequestFilter

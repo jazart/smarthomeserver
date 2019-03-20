@@ -76,10 +76,9 @@ fun ParentUserEntity.toUserDomain(): ParentUser {
             lastName = this.lastName,
             username = this.username
     )
-
-    val domainDevices = this.devices.map { dev -> dev.toDeviceDomain(parentUserDomain) }.toMutableList()
+    val domainDevices = this.devices.map { dev -> dev.toDeviceDomain(parentUserDomain) }
     parentUserDomain.devices.addAll(domainDevices)
-    val familyDomain = this.family.map { fam -> fam.toUserDomain(parentUserDomain) }.toMutableList()
+    val familyDomain = this.family.map { fam -> fam.toUserDomain(parentUserDomain) }
     parentUserDomain.family.addAll(familyDomain)
     return parentUserDomain
 }
@@ -109,6 +108,4 @@ interface User {
 
     val email: String
         get() = ""
-
-
 }

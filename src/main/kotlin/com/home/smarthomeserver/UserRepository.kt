@@ -3,11 +3,8 @@ package com.home.smarthomeserver
 import com.home.smarthomeserver.entity.ChildUserEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.entity.User
-import com.home.smarthomeserver.models.ChildUser
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.NoRepositoryBean
-import org.springframework.transaction.annotation.Propagation
-import org.springframework.transaction.annotation.Transactional
 
 @NoRepositoryBean
 interface UserRepository<T : User> : JpaRepository<T, String> {
