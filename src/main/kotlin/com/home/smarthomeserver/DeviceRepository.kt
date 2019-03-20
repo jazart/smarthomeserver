@@ -10,7 +10,8 @@ interface DeviceRepository : JpaRepository<DeviceEntity, String> {
     fun deleteDeviceEntityByNameAndOwnerUsername(deviceName: String, username: String): Int
     fun existsDeviceEntityById(id: Long): Boolean
     fun existsDeviceEntityByNameAndOwnerUsername(name: String, ownerUsername: String): Boolean
-    fun findDeviceEntityByFavoriteTrueAndNameAndOwnerUsername(deviceName: String, username: String): DeviceEntity
+//    fun findDeviceEntityByNameAndOwnerUsernameAndFavoriteTrue(deviceName: String, username: String): DeviceEntity?
+    fun findDeviceEntityByNameAndOwnerUsernameAndFavoriteTrue(deviceName: String, username: String): DeviceEntity?
 }
 
 

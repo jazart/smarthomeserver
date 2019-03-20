@@ -30,8 +30,7 @@ open class DeviceEntity(
         open var owner: ParentUserEntity,
 
         @Column(nullable = false)
-
-        open var isFavorite: Boolean = false,
+        open var favorite: Boolean = false,
 
         @Column(nullable = false, unique = true, updatable = false)
         open var thingName: String

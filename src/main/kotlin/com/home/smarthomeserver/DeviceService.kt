@@ -9,6 +9,7 @@ import com.home.smarthomeserver.devices.RPILight
 import com.home.smarthomeserver.entity.DeviceEntity
 import com.home.smarthomeserver.entity.Status
 import com.home.smarthomeserver.models.Command
+import com.home.smarthomeserver.models.DeviceInfo
 import kotlinx.coroutines.future.await
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -29,8 +30,8 @@ class DeviceService {
     @Autowired
     lateinit var deviceRepository: DeviceRepository
 
-    fun updateDeviceStatus(id: String, deviceName: String, command: Command) {
-        val device = RPILight(deviceName)
+    fun updateDeviceStatus(deviceInfo: DeviceInfo, command: Command) {
+        val device = RPILight(deviceInfo.deviceName)
         connect(device)
         device.command = command.toString()
         device.status = Status.CONNECTED.toString()
@@ -38,15 +39,19 @@ class DeviceService {
         device.update(json)
     }
 
-    suspend fun addDevice(username: String, device: String): Boolean {
-        val newThingName = device + userService.userRepository.findUserByUsername(username).id
+    suspend fun addDevice(deviceInfo: DeviceInfo): Boolean {
+        val newThingName = deviceInfo.deviceName +
+                userService.userRepository.findUserByUsername(deviceInfo.username).id
         val thingResponse = AwsIotClient.get().createThing(CreateThingRequest.builder().run {
             thingName(newThingName)
             build()
         }).await()
         if (thingResponse.sdkHttpResponse().isSuccessful) {
-            val user = userService.getUserEntity(username)
-            val deviceEntity = DeviceEntity(name = device, commands = mutableListOf(), id = 1L, owner = user, thingName = newThingName)
+            val user = userService.getUserEntity(deviceInfo.username)
+            val deviceEntity = DeviceEntity(
+                    name = deviceInfo.deviceName,
+                    commands = mutableListOf(),
+                    id = 1L, owner = user, thingName = newThingName)
             user.devices.add(deviceEntity)
             userService.userRepository.save(user)
         }
@@ -54,42 +59,45 @@ class DeviceService {
     }
 
 
-    suspend fun removeDevice(username: String, deviceName: String): Boolean {
-        if (deviceRepository.deleteDeviceEntityByNameAndOwnerUsername(deviceName, username) > 0) {
+    suspend fun removeDevice(deviceInfo: DeviceInfo): Boolean {
+        val deviceToDelete = deviceRepository.findDeviceEntityByNameAndOwnerUsername(deviceInfo.deviceName, deviceInfo.username)
+        deviceToDelete?.run {
+            deviceRepository.delete(this)
             return AwsIotClient.get().deleteThing(
-                    DeleteThingRequest.builder().thingName(deviceName).build()
+                    DeleteThingRequest.builder().thingName(thingName).build()
             ).await().sdkHttpResponse().isSuccessful
         }
         return false
     }
 
-    fun addFavorite(username: String, deviceName: String) {
+    fun addFavorite(deviceInfo: DeviceInfo) {
         deviceRepository.apply {
-            val prevFavorite = findDeviceEntityByNameAndOwnerUsername(username, deviceName)
-            val newFavorite = findDeviceEntityByNameAndOwnerUsername(deviceName, username) ?: throw Exception()
+            val prevFavorite = findDeviceEntityByNameAndOwnerUsernameAndFavoriteTrue(deviceInfo.username, deviceInfo.deviceName)
+            val newFavorite = findDeviceEntityByNameAndOwnerUsername(deviceInfo.deviceName, deviceInfo.username)
+                    ?: throw Exception()
             if (prevFavorite == null) {
-                newFavorite.isFavorite = true
+                newFavorite.favorite = true
                 save(newFavorite)
             } else {
-                prevFavorite.isFavorite = false
-                newFavorite.isFavorite = true
+                prevFavorite.favorite = false
+                newFavorite.favorite = true
                 saveAll(listOf(prevFavorite, newFavorite))
             }
         }
     }
 
-    fun removeFavorite(username: String, deviceName: String): String {
+    fun removeFavorite(deviceInfo: DeviceInfo): String {
         deviceRepository.apply {
-            val prevFavorite = findDeviceEntityByNameAndOwnerUsername(deviceName, username)
+            val prevFavorite = findDeviceEntityByNameAndOwnerUsername(deviceInfo.deviceName, deviceInfo.username)
             prevFavorite?.let { save(it) }
-            return deviceName
+            return deviceInfo.deviceName
         }
     }
 
-    fun modifyDeviceName(username: String, deviceName: String) {
-        val device = deviceRepository.findDeviceEntityByNameAndOwnerUsername(username, deviceName)
+    fun modifyDeviceName(deviceInfo: DeviceInfo, newName: String) {
+        val device = deviceRepository.findDeviceEntityByNameAndOwnerUsername(deviceInfo.username, deviceInfo.deviceName)
         device?.apply {
-            name = deviceName
+            name = newName
             deviceRepository.save(this)
         }
     }
@@ -116,5 +124,4 @@ class DeviceService {
         }
         println("==========connected=================")
     }
-
 }

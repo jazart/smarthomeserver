@@ -47,60 +47,78 @@ class MutationResolver : GraphQLMutationResolver {
         return userService.login(name, pass)
     }
 
-    fun addChild(username: String, firstName: String, lastName: String, pass: String, parentName: String, email: String): String {
+    fun addChild(creds: Credential, personal: Personal, parentName: String): String? {
         val user = userService.userRepository.findUserByUsername(parentName)
-        val child = ChildUserEntity(firstName = firstName, lastName = lastName, password = pass, parent = user, id = 0, username = username, email = email)
+        val child = ChildUserEntity(firstName = personal.firstName,
+                lastName = personal.lastName,
+                password = creds.password,
+                parent = user,
+                id = 0,
+                username = creds.username,
+                email = personal.email)
         userService.addChild(user, child)
         return "Ok"
     }
 
     @Unsecured
-    fun update(uId: String, deviceName: String, command: Command): String {
+    fun sendCommand(deviceInfo: DeviceInfo, deviceType: DeviceType, command: Command): Command? {
         deviceService.run {
-            updateDeviceStatus(uId, deviceName, command)
+            updateDeviceStatus(deviceInfo, command)
         }
-        return "Ok"
+        return command
     }
 
-    @Throws(GraphQLException::class)
-    fun addDevice(username: ParentUser, deviceName: String, device: Device) {
-
-    }
 
     @Unsecured
     @Throws(GraphQLException::class)
-    suspend fun removeDevice(username: String, deviceName: String): Boolean {
+    suspend fun removeDevice(deviceInfo: DeviceInfo): String? {
         return mutationScope.async {
             withContext(Dispatchers.IO) {
                 try {
-                    return@withContext deviceService.removeDevice(username, deviceName)
+                    return@withContext if (deviceService.removeDevice(deviceInfo))
+                        deviceInfo.deviceName
+                    else
+                        null
                 } catch (e: NoSuchElementException) {
-                    return@withContext false
+                    return@withContext null
                 }
             }
         }.await()
     }
 
-    fun modifyDeviceName(dId: String, deviceName: String) {
-        deviceService.modifyDeviceName(dId, deviceName)
+    fun modifyDeviceName(deviceInfo: DeviceInfo, newName: String): String? {
+        deviceService.modifyDeviceName(deviceInfo, newName)
+        return newName
     }
 
     @Unsecured
     @Throws(Exception::class)
-    suspend fun addDevice(username: String, device: String): Boolean {
-        if (username.isBlank() || !userService.userRepository.existsParentUserEntityByUsername(username)) {
-            throw Exception("Could not create device. User '$username' not found.")
-        }
+    suspend fun addDevice(deviceInfo: DeviceInfo, type: DeviceType): String? {
         return mutationScope.async {
             try {
                 withContext(Dispatchers.IO) {
-                    return@withContext deviceService.addDevice(username, device)
+                    return@withContext if (deviceService.addDevice(deviceInfo))
+                        deviceInfo.deviceName
+                    else
+                        null
                 }
             } catch (e: ThrottlingException) {
-                return@async false
+                return@async null
             } catch (e: ResourceAlreadyExistsException) {
-                throw Exception("The device $device already exists in your device group.")
+                throw Exception("The device ${deviceInfo.deviceName} already exists in your device group.")
             }
         }.await()
     }
+
+    fun batchRemoveDevices(username: String, devices: List<String>): List<String>? {
+        return null
+    }
+    fun addFavorite(deviceInfo: DeviceInfo): String? {
+        return null
+    }
+
+    fun removeFavorite(deviceInfo: DeviceInfo): String? {
+       return null
+    }
+
 }
