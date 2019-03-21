@@ -10,12 +10,13 @@ import org.springframework.stereotype.Component
 
 @Aspect
 @Component
-@Order(1)
+@Order(2)
 class GraphQLAspect {
 
     @Throws(AccessDeniedException::class)
     @Before("allGraphQLResolverMethods() && isDefinedInApplication() && !isMethodAnnotatedAsUnsecured()")
     fun doSecurityCheck() {
+        val holder = SecurityContextHolder.getContext()
         if (SecurityContextHolder.getContext() == null ||
                 SecurityContextHolder.getContext().authentication == null ||
                 !SecurityContextHolder.getContext().authentication.isAuthenticated ||

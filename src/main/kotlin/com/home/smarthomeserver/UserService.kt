@@ -60,7 +60,6 @@ class UserService {
     }
 
     fun addChild(parent: ParentUserEntity, child: ChildUserEntity) {
-        childUserRepository.save(child)
         parent.family.add(child)
         userRepository.save(parent)
     }

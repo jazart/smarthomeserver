@@ -12,6 +12,7 @@ import com.home.smarthomeserver.models.Command
 import com.home.smarthomeserver.models.DeviceInfo
 import kotlinx.coroutines.future.await
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import software.amazon.awssdk.services.iot.model.CreateThingRequest
@@ -39,6 +40,7 @@ class DeviceService {
         device.update(json)
     }
 
+    @Throws(Exception::class)
     suspend fun addDevice(deviceInfo: DeviceInfo): Boolean {
         val newThingName = deviceInfo.deviceName +
                 userService.userRepository.findUserByUsername(deviceInfo.username).id
@@ -46,14 +48,18 @@ class DeviceService {
             thingName(newThingName)
             build()
         }).await()
-        if (thingResponse.sdkHttpResponse().isSuccessful) {
-            val user = userService.getUserEntity(deviceInfo.username)
-            val deviceEntity = DeviceEntity(
-                    name = deviceInfo.deviceName,
-                    commands = mutableListOf(),
-                    id = 1L, owner = user, thingName = newThingName)
-            user.devices.add(deviceEntity)
-            userService.userRepository.save(user)
+        try {
+            if (thingResponse.sdkHttpResponse().isSuccessful) {
+                val user = userService.getUserEntity(deviceInfo.username)
+                val deviceEntity = DeviceEntity(
+                        name = deviceInfo.deviceName,
+                        commands = mutableListOf(),
+                        id = 1L, owner = user, thingName = newThingName)
+                user.devices.add(deviceEntity)
+                userService.userRepository.save(user)
+            }
+        } catch (e: DataIntegrityViolationException) {
+            throw Exception("User: '${deviceInfo.username}' already has a device named '${deviceInfo.deviceName}'")
         }
         return thingResponse.sdkHttpResponse().isSuccessful
     }
@@ -72,7 +78,7 @@ class DeviceService {
 
     fun addFavorite(deviceInfo: DeviceInfo) {
         deviceRepository.apply {
-            val prevFavorite = findDeviceEntityByNameAndOwnerUsernameAndFavoriteTrue(deviceInfo.username, deviceInfo.deviceName)
+            val prevFavorite = findDeviceEntityByFavoriteTrueAndOwnerUsername(deviceInfo.username)
             val newFavorite = findDeviceEntityByNameAndOwnerUsername(deviceInfo.deviceName, deviceInfo.username)
                     ?: throw Exception()
             if (prevFavorite == null) {
@@ -124,4 +130,6 @@ class DeviceService {
         }
         println("==========connected=================")
     }
+
+//    private fun validateCreds
 }

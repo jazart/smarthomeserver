@@ -1,7 +1,6 @@
 package com.home.smarthomeserver.graphqlmutations
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver
-import com.home.smarthomeserver.ChildUserRepository
 import com.home.smarthomeserver.DeviceService
 import com.home.smarthomeserver.SignupException
 import com.home.smarthomeserver.UserService
@@ -10,8 +9,10 @@ import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.models.*
 import com.home.smarthomeserver.security.Unsecured
 import graphql.GraphQLException
+import graphql.schema.DataFetchingEnvironment
 import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.services.iot.model.ResourceAlreadyExistsException
 import software.amazon.awssdk.services.iot.model.ThrottlingException
@@ -25,9 +26,6 @@ class MutationResolver : GraphQLMutationResolver {
 
     @Autowired
     lateinit var userService: UserService
-
-    @Autowired
-    lateinit var childUserRepository: ChildUserRepository
 
     private val mutationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -86,6 +84,7 @@ class MutationResolver : GraphQLMutationResolver {
         }.await()
     }
 
+    @Unsecured
     fun modifyDeviceName(deviceInfo: DeviceInfo, newName: String): String? {
         deviceService.modifyDeviceName(deviceInfo, newName)
         return newName
@@ -110,15 +109,42 @@ class MutationResolver : GraphQLMutationResolver {
         }.await()
     }
 
-    fun batchRemoveDevices(username: String, devices: List<String>): List<String>? {
-        return null
+    suspend fun batchRemoveDevices(username: String, devices: List<String>, env: DataFetchingEnvironment): List<String>? {
+//        val req = env.getContext<GraphQLContext>().httpServletRequest.get()
+//        val headers = req.headerNames
+//        val token = req.getHeader(TOKEN_PREFIX)
+
+        val auth = SecurityContextHolder.getContext().authentication
+        val name = auth.name
+        val authorities = auth.authorities
+
+        return mutationScope.async {
+            val result = mutableListOf<String>()
+            withContext(Dispatchers.IO) {
+                devices.forEach {
+                    if (deviceService.removeDevice(DeviceInfo(username, it))) result.add(it)
+                }
+                return@withContext result.toList()
+            }
+        }.await()
     }
+
+    @Unsecured
     fun addFavorite(deviceInfo: DeviceInfo): String? {
-        return null
+        try {
+            deviceService.addFavorite(deviceInfo)
+            return deviceInfo.deviceName
+        } catch (e: Exception) {
+            throw Exception("Unable to add ${deviceInfo.deviceName} as favorite")
+        }
     }
 
     fun removeFavorite(deviceInfo: DeviceInfo): String? {
-       return null
+        try {
+            deviceService.removeFavorite(deviceInfo)
+            return deviceInfo.deviceName
+        } catch (e: Exception) {
+            throw Exception("Unable to remove ${deviceInfo.deviceName} from favorite")
+        }
     }
-
 }

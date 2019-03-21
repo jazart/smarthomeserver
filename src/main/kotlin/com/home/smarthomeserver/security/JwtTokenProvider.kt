@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
@@ -16,6 +17,9 @@ class JwtTokenProvider {
 
     @Autowired
     lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
+
+    @Autowired
+    lateinit var authenticationManager: AuthenticationManager
 
     fun createToken(username: String): String =
             JWT.create().run {
@@ -30,6 +34,7 @@ class JwtTokenProvider {
     fun getAuthentication(token: String): Authentication {
         val userName = getUsername(token)
         val details = userDetailsServiceImpl.loadUserByUsername(userName)
+//        val auth =
         return UsernamePasswordAuthenticationToken(details, details.password, details.authorities)
     }
 
