@@ -95,6 +95,7 @@ class DeviceService {
     fun removeFavorite(deviceInfo: DeviceInfo): String {
         deviceRepository.apply {
             val prevFavorite = findDeviceEntityByNameAndOwnerUsername(deviceInfo.deviceName, deviceInfo.username)
+            prevFavorite?.favorite = false
             prevFavorite?.let { save(it) }
             return deviceInfo.deviceName
         }
