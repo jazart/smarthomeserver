@@ -69,9 +69,10 @@ class DeviceService {
         val deviceToDelete = deviceRepository.findDeviceEntityByNameAndOwnerUsername(deviceInfo.deviceName, deviceInfo.username)
         deviceToDelete?.run {
             deviceRepository.delete(this)
-            return AwsIotClient.get().deleteThing(
+            val result = AwsIotClient.get().deleteThing(
                     DeleteThingRequest.builder().thingName(thingName).build()
             ).await().sdkHttpResponse().isSuccessful
+            return result
         }
         return false
     }

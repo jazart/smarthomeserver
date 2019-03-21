@@ -4,6 +4,7 @@ import com.home.smarthomeserver.entity.DeviceEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.models.DeviceInfo
 import kotlinx.coroutines.runBlocking
+import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
@@ -38,7 +39,7 @@ class DeviceServiceTest {
         val newDevice = DeviceEntity(
                 name = "test",
                 id = 64L,
-                thingName = "Camera",
+                thingName = "test" + newUserEntity.id,
                 owner = newUserEntity)
         Mockito.`when`(deviceRepository.findDeviceEntityByNameAndOwnerUsername("test","Ken"))
                 .thenReturn(newDevice)
@@ -56,6 +57,28 @@ class DeviceServiceTest {
 
             // Assert
             assert(didDeviceAdd)
+        }
+    }
+
+    @Test
+    fun `test remove device should remove from AWS`(){
+        runBlocking {
+            //Act
+            val didDeviceRemove = deviceService.removeDevice(deviceInfo = DeviceInfo(username = "Ken", deviceName = "test"))
+
+            //Assert
+            assert(didDeviceRemove)
+        }
+    }
+
+    @Test
+    fun `test remove invalid device should return false`(){
+        runBlocking {
+            //Act
+            val didDeviceRemove = deviceService.removeDevice(deviceInfo = DeviceInfo(username = "Ken", deviceName = "newTest"))
+
+            //Assert
+            assertThat(didDeviceRemove).isFalse()
         }
     }
 }
