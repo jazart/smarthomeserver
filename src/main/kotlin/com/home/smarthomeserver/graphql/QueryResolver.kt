@@ -1,4 +1,4 @@
-package com.home.smarthomeserver.graphqlqueries
+package com.home.smarthomeserver.graphql
 
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.coxautodev.graphql.tools.GraphQLQueryResolver

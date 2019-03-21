@@ -15,3 +15,4 @@ class SmarthomeserverApplication : SpringBootServletInitializer()
 fun main(args: Array<String>) {
     runApplication<SmarthomeserverApplication>(*args)
 }
+

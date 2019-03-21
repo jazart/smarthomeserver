@@ -1,5 +1,6 @@
 package com.home.smarthomeserver.security
 
+import org.aspectj.lang.annotation.After
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Before
 import org.aspectj.lang.annotation.Pointcut
@@ -25,7 +26,12 @@ class GraphQLAspect {
         }
     }
 
-    @Pointcut("target(com.coxautodev.graphql.tools.GraphQLResolver)")
+    @After("allGraphQLResolverMethods()")
+    fun clearSecurityAfterGraphQLRequest() {
+        SecurityContextHolder.clearContext()
+    }
+
+    @Pointcut("target(com.home.smarthomeserver.graphql)")
     private fun allGraphQLResolverMethods() {
     }
 

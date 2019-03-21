@@ -1,4 +1,4 @@
-package com.home.smarthomeserver.graphqlmutations
+package com.home.smarthomeserver.graphql
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver
 import com.home.smarthomeserver.DeviceService
@@ -84,13 +84,11 @@ class MutationResolver : GraphQLMutationResolver {
         }.await()
     }
 
-    @Unsecured
     fun modifyDeviceName(deviceInfo: DeviceInfo, newName: String): String? {
         deviceService.modifyDeviceName(deviceInfo, newName)
         return newName
     }
 
-    @Unsecured
     @Throws(Exception::class)
     suspend fun addDevice(deviceInfo: DeviceInfo, type: DeviceType): String? {
         return mutationScope.async {
@@ -129,7 +127,6 @@ class MutationResolver : GraphQLMutationResolver {
         }.await()
     }
 
-    @Unsecured
     fun addFavorite(deviceInfo: DeviceInfo): String? {
         try {
             deviceService.addFavorite(deviceInfo)
