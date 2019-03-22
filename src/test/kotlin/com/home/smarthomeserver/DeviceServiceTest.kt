@@ -3,6 +3,9 @@ package com.home.smarthomeserver
 import com.home.smarthomeserver.entity.DeviceEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.models.DeviceInfo
+import com.home.smarthomeserver.repository.DeviceRepository
+import com.home.smarthomeserver.repository.ParentUserRepository
+import com.home.smarthomeserver.service.DeviceService
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -25,7 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner
 class DeviceServiceTest {
 
     @Autowired
-    lateinit var deviceService :DeviceService
+    lateinit var deviceService: DeviceService
 
     @MockBean
     lateinit var deviceRepository: DeviceRepository
@@ -34,19 +37,20 @@ class DeviceServiceTest {
     lateinit var userRepository: ParentUserRepository
 
     @Before
-    fun setup(){
+    fun setup() {
         val newUserEntity = ParentUserEntity(username = "Ken", password = "random", email = "email", id = 45L)
         val newDevice = DeviceEntity(
                 name = "test",
                 id = 64L,
                 thingName = "test" + newUserEntity.id,
                 owner = newUserEntity)
-        Mockito.`when`(deviceRepository.findDeviceEntityByNameAndOwnerUsername("test","Ken"))
+        Mockito.`when`(deviceRepository.findDeviceEntityByNameAndOwnerUsername("test", "Ken"))
                 .thenReturn(newDevice)
         Mockito.`when`(userRepository.findUserByUsername("Ken")).thenReturn(newUserEntity)
     }
+
     @Test
-    fun `test add device should add to database`(){
+    fun `test add device should add to database`() {
         runBlocking {
             // Arrange
             val newDevice = deviceRepository.findDeviceEntityByNameAndOwnerUsername("test", "Ken")
@@ -61,7 +65,7 @@ class DeviceServiceTest {
     }
 
     @Test
-    fun `test remove device should remove from AWS`(){
+    fun `test remove device should remove from AWS`() {
         runBlocking {
             //Act
             val didDeviceRemove = deviceService.removeDevice(deviceInfo = DeviceInfo(username = "Ken", deviceName = "test"))
@@ -72,7 +76,7 @@ class DeviceServiceTest {
     }
 
     @Test
-    fun `test remove invalid device should return false`(){
+    fun `test remove invalid device should return false`() {
         runBlocking {
             //Act
             val didDeviceRemove = deviceService.removeDevice(deviceInfo = DeviceInfo(username = "Ken", deviceName = "newTest"))
@@ -82,8 +86,9 @@ class DeviceServiceTest {
         }
     }
 }
+
 @TestConfiguration
-class TestConfig{
+class TestConfig {
     @Bean
     fun deviceService() = DeviceService()
 }

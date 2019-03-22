@@ -25,7 +25,7 @@ open class DeviceEntity(
         @ElementCollection(targetClass = Command::class)
         open var commands: MutableList<Command> = mutableListOf(),
 
-        @ManyToOne(cascade = [CascadeType.REFRESH, CascadeType.MERGE])
+        @ManyToOne
         @JoinColumn(name = "parent_id")
         open var owner: ParentUserEntity,
 

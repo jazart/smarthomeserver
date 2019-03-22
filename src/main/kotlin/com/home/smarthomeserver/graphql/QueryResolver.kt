@@ -2,8 +2,8 @@ package com.home.smarthomeserver.graphql
 
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.coxautodev.graphql.tools.GraphQLQueryResolver
-import com.home.smarthomeserver.ChildUserRepository
-import com.home.smarthomeserver.UserService
+import com.home.smarthomeserver.repository.ChildUserRepository
+import com.home.smarthomeserver.service.UserService
 import com.home.smarthomeserver.entity.Status
 import com.home.smarthomeserver.models.ChildUser
 import com.home.smarthomeserver.models.Device

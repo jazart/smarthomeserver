@@ -1,4 +1,4 @@
-package com.home.smarthomeserver
+package com.home.smarthomeserver.repository
 
 import com.home.smarthomeserver.entity.DeviceEntity
 import com.home.smarthomeserver.entity.LightEntity
@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface DeviceRepository : JpaRepository<DeviceEntity, String> {
     fun findDeviceEntityById(id: Long): DeviceEntity?
     fun findDeviceEntityByNameAndOwnerUsername(deviceName: String, username: String): DeviceEntity?
-    fun deleteDeviceEntityByNameAndOwnerUsername(deviceName: String, username: String): Int
     fun existsDeviceEntityById(id: Long): Boolean
     fun existsDeviceEntityByNameAndOwnerUsername(name: String, ownerUsername: String): Boolean
     fun findDeviceEntityByFavoriteTrueAndOwnerUsername(username: String): DeviceEntity?

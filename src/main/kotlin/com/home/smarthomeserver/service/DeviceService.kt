@@ -1,9 +1,10 @@
-package com.home.smarthomeserver
+package com.home.smarthomeserver.service
 
 import com.amazonaws.services.iot.client.AWSIotConnectionStatus
 import com.amazonaws.services.iot.client.AWSIotDevice
 import com.amazonaws.services.iot.client.AWSIotMqttClient
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.home.smarthomeserver.repository.DeviceRepository
 import com.home.smarthomeserver.awsconfig.AwsIotClient
 import com.home.smarthomeserver.devices.RPILight
 import com.home.smarthomeserver.entity.DeviceEntity

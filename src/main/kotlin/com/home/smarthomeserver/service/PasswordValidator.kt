@@ -1,4 +1,4 @@
-package com.home.smarthomeserver
+package com.home.smarthomeserver.service
 
 
 object PasswordValidator {
@@ -7,8 +7,8 @@ object PasswordValidator {
 
     fun isValid(password: String): List<PasswordResult>? {
         val validationResult = mutableListOf<PasswordResult>()
-        if (password.length < PASSWORD_LENGTH) validationResult.add(PasswordResult.TOO_SHORT)
-        if (!password.contains(Regex("[0-9]+"))) validationResult.add(PasswordResult.NO_DIGITS)
+        if (password.length < PASSWORD_LENGTH) validationResult.add(PasswordValidator.PasswordResult.TOO_SHORT)
+        if (!password.contains(Regex("[0-9]+"))) validationResult.add(PasswordValidator.PasswordResult.NO_DIGITS)
         return if(validationResult.isEmpty()) null else validationResult
     }
 

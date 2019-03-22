@@ -1,6 +1,6 @@
 package com.home.smarthomeserver.security
 
-import com.home.smarthomeserver.ParentUserRepository
+import com.home.smarthomeserver.repository.ParentUserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails

@@ -1,9 +1,9 @@
 package com.home.smarthomeserver.graphql
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver
-import com.home.smarthomeserver.DeviceService
+import com.home.smarthomeserver.service.DeviceService
 import com.home.smarthomeserver.SignupException
-import com.home.smarthomeserver.UserService
+import com.home.smarthomeserver.service.UserService
 import com.home.smarthomeserver.entity.ChildUserEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.models.*

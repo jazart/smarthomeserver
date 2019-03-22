@@ -57,10 +57,12 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web')
     runtime ('org.postgresql:postgresql:42.2.1')
     implementation 'com.auth0:java-jwt:3.7.0'
+    
+    implementation 'com.h2database:h2'
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+//    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
 }
 
 compileKotlin {

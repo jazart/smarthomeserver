@@ -1,8 +1,8 @@
 package com.home.smarthomeserver.models
 
-import com.home.smarthomeserver.ChildUserRepository
-import com.home.smarthomeserver.DeviceRepository
-import com.home.smarthomeserver.ParentUserRepository
+import com.home.smarthomeserver.repository.ChildUserRepository
+import com.home.smarthomeserver.repository.DeviceRepository
+import com.home.smarthomeserver.repository.ParentUserRepository
 import com.home.smarthomeserver.entity.ChildUserEntity
 import com.home.smarthomeserver.entity.DeviceEntity
 import com.home.smarthomeserver.entity.ParentUserEntity

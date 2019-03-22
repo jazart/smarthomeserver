@@ -1,4 +1,4 @@
-package com.home.smarthomeserver
+package com.home.smarthomeserver.repository
 
 import com.home.smarthomeserver.entity.ChildUserEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
@@ -19,7 +19,7 @@ interface ParentUserRepository : UserRepository<ParentUserEntity> {
 
 }
 
-interface ChildUserRepository : UserRepository<ChildUserEntity>{
+interface ChildUserRepository : UserRepository<ChildUserEntity> {
     override fun findUserByUsername(username: String): ChildUserEntity
     override fun existsUserByUsername(name: String): Boolean
 }
