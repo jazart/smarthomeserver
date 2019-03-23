@@ -12,6 +12,7 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -36,17 +37,22 @@ class DeviceServiceTest {
     @MockBean
     lateinit var userRepository: ParentUserRepository
 
+
+    lateinit var newDevice: DeviceEntity
+
     @Before
     fun setup() {
         val newUserEntity = ParentUserEntity(username = "Ken", password = "random", email = "email", id = 45L)
-        val newDevice = DeviceEntity(
+        newDevice = DeviceEntity(
                 name = "test",
                 id = 64L,
                 thingName = "test" + newUserEntity.id,
-                owner = newUserEntity)
+                owner = newUserEntity,
+                favorite = true)
         Mockito.`when`(deviceRepository.findDeviceEntityByNameAndOwnerUsername("test", "Ken"))
                 .thenReturn(newDevice)
         Mockito.`when`(userRepository.findUserByUsername("Ken")).thenReturn(newUserEntity)
+        Mockito.`when`(deviceRepository.save(any(DeviceEntity::class.java))).thenReturn(newDevice)
     }
 
     @Test
@@ -84,6 +90,29 @@ class DeviceServiceTest {
             //Assert
             assertThat(didDeviceRemove).isFalse()
         }
+    }
+
+    @Test
+    fun `test add favorite should return name of new favorite`() {
+        val newDeviceInfo = DeviceInfo(username = "Ken", deviceName = "test")
+        val favoriteName = deviceService.addFavorite(newDeviceInfo)
+        assertThat(favoriteName).isEqualTo("test")
+    }
+
+    @Test
+    fun `test remove favorite should name of removed favorite`() {
+        val newDeviceInfo = DeviceInfo(username = "Ken", deviceName = "test")
+        val favoriteName = deviceService.removeFavorite(newDeviceInfo)
+        assertThat(favoriteName).isEqualTo("test")
+        assertThat(newDevice.favorite).isFalse()
+    }
+
+    @Test
+    fun `test modify device should return new name`(){
+        val newDeviceInfo = DeviceInfo(username = "Ken", deviceName = "test")
+        val newName = deviceService.modifyDeviceName(newDeviceInfo, "newTest")
+        assertThat(newName).isEqualTo("newTest")
+
     }
 }
 

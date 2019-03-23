@@ -78,7 +78,7 @@ class DeviceService {
         return false
     }
 
-    fun addFavorite(deviceInfo: DeviceInfo) {
+    fun addFavorite(deviceInfo: DeviceInfo): String {
         deviceRepository.apply {
             val prevFavorite = findDeviceEntityByFavoriteTrueAndOwnerUsername(deviceInfo.username)
             val newFavorite = findDeviceEntityByNameAndOwnerUsername(deviceInfo.deviceName, deviceInfo.username)
@@ -91,6 +91,7 @@ class DeviceService {
                 newFavorite.favorite = true
                 saveAll(listOf(prevFavorite, newFavorite))
             }
+        return deviceInfo.deviceName
         }
     }
 
@@ -103,11 +104,12 @@ class DeviceService {
         }
     }
 
-    fun modifyDeviceName(deviceInfo: DeviceInfo, newName: String) {
-        val device = deviceRepository.findDeviceEntityByNameAndOwnerUsername(deviceInfo.username, deviceInfo.deviceName)
+    fun modifyDeviceName(deviceInfo: DeviceInfo, newName: String): String {
+        val device = deviceRepository.findDeviceEntityByNameAndOwnerUsername(deviceInfo.deviceName,deviceInfo.username)
         device?.apply {
             name = newName
             deviceRepository.save(this)
+            return newName
         }
     }
 
