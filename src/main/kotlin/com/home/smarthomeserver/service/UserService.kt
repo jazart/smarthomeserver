@@ -62,9 +62,10 @@ class UserService {
         }
     }
 
-    fun addChild(parent: ParentUserEntity, child: ChildUserEntity) {
+    fun addChild(parent: ParentUserEntity, child: ChildUserEntity): Boolean {
         parent.family.add(child)
         userRepository.save(parent)
+        return parent.family.contains(child)
     }
 
 

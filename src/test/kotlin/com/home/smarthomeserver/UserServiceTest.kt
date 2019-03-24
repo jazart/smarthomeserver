@@ -1,5 +1,6 @@
 package com.home.smarthomeserver
 
+import com.home.smarthomeserver.entity.ChildUserEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.repository.ParentUserRepository
 import com.home.smarthomeserver.repository.UserRepository
@@ -44,6 +45,7 @@ class UserServiceTest{
     lateinit var encoder: BCryptPasswordEncoder
 
     lateinit var user: ParentUserEntity
+
 
     @Before
     fun setup(){
@@ -108,6 +110,14 @@ class UserServiceTest{
     fun `test login with correct credentials returns token`(){
         val token = userService.login(user.username,user.password)
         assert(token.isNotBlank())
+    }
+
+    @Test
+    fun `test adding child should make it part of parent family`(){
+        val child = ChildUserEntity(username = "jr", password = "random11", email = "email2", id = 64L, parent = user)
+        val didChildAdd = userService.addChild(user,child)
+
+        assertThat(didChildAdd).isTrue()
     }
 }
 
