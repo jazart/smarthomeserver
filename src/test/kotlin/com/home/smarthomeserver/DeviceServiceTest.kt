@@ -116,8 +116,3 @@ class DeviceServiceTest {
     }
 }
 
-@TestConfiguration
-class TestConfig {
-    @Bean
-    fun deviceService() = DeviceService()
-}
