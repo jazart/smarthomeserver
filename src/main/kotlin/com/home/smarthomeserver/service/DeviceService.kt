@@ -4,13 +4,13 @@ import com.amazonaws.services.iot.client.AWSIotConnectionStatus
 import com.amazonaws.services.iot.client.AWSIotDevice
 import com.amazonaws.services.iot.client.AWSIotMqttClient
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.home.smarthomeserver.repository.DeviceRepository
 import com.home.smarthomeserver.awsconfig.AwsIotClient
 import com.home.smarthomeserver.devices.RPILight
 import com.home.smarthomeserver.entity.DeviceEntity
 import com.home.smarthomeserver.entity.Status
 import com.home.smarthomeserver.models.Command
 import com.home.smarthomeserver.models.DeviceInfo
+import com.home.smarthomeserver.repository.DeviceRepository
 import kotlinx.coroutines.future.await
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException
@@ -44,7 +44,7 @@ class DeviceService {
     @Throws(Exception::class)
     suspend fun addDevice(deviceInfo: DeviceInfo): Boolean {
         val newThingName = deviceInfo.deviceName +
-                userService.userRepository.findUserByUsername(deviceInfo.username).id
+                userService.userRepository.findUserByUsername(deviceInfo.username)?.id
         val thingResponse = AwsIotClient.get().createThing(CreateThingRequest.builder().run {
             thingName(newThingName)
             build()
@@ -104,13 +104,14 @@ class DeviceService {
         }
     }
 
-    fun modifyDeviceName(deviceInfo: DeviceInfo, newName: String): String {
+    fun modifyDeviceName(deviceInfo: DeviceInfo, newName: String): String? {
         val device = deviceRepository.findDeviceEntityByNameAndOwnerUsername(deviceInfo.deviceName,deviceInfo.username)
         device?.apply {
             name = newName
             deviceRepository.save(this)
             return newName
         }
+        return null
     }
 
     private fun buildJson(shadowValues: Map<String, String>): String {
@@ -135,6 +136,4 @@ class DeviceService {
         }
         println("==========connected=================")
     }
-
-//    private fun validateCreds
 }

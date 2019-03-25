@@ -1,12 +1,12 @@
 package com.home.smarthomeserver.service
 
-import com.home.smarthomeserver.repository.ChildUserRepository
-import com.home.smarthomeserver.repository.ParentUserRepository
 import com.home.smarthomeserver.SignupException
 import com.home.smarthomeserver.entity.ChildUserEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.entity.toUserDomain
 import com.home.smarthomeserver.models.ParentUser
+import com.home.smarthomeserver.repository.ChildUserRepository
+import com.home.smarthomeserver.repository.ParentUserRepository
 import com.home.smarthomeserver.security.JwtTokenProvider
 import com.home.smarthomeserver.security.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
@@ -70,16 +70,17 @@ class UserService {
 
 
     @Transactional(propagation = Propagation.REQUIRED)
-    fun getUserByName(username: String): ParentUser? = userRepository.findUserByUsername(username).toUserDomain()
+    fun getUserByName(username: String): ParentUser? = userRepository.findUserByUsername(username)?.toUserDomain()
 
     @Transactional(propagation = Propagation.REQUIRED)
     fun getUserEntity(username: String, fetchEager: Boolean = true): ParentUserEntity {
-        val parent = userRepository.findUserByUsername(username)
+        val parent = userRepository.findUserByUsername(username) ?: throw Exception("User not found")
         if(fetchEager) {
             val size = parent.devices.size
         }
         return parent
     }
+
     fun isValid(user: UserDetails, password: String): Boolean =
             (passwordEncoder.matches(password, user.password) && user.isAccountNonExpired
                     && user.isAccountNonLocked && user.isCredentialsNonExpired)

@@ -1,13 +1,13 @@
 package com.home.smarthomeserver.graphql
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver
-import com.home.smarthomeserver.service.DeviceService
 import com.home.smarthomeserver.SignupException
-import com.home.smarthomeserver.service.UserService
 import com.home.smarthomeserver.entity.ChildUserEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.models.*
 import com.home.smarthomeserver.security.Unsecured
+import com.home.smarthomeserver.service.DeviceService
+import com.home.smarthomeserver.service.UserService
 import graphql.GraphQLException
 import graphql.schema.DataFetchingEnvironment
 import kotlinx.coroutines.*
@@ -46,7 +46,7 @@ class MutationResolver : GraphQLMutationResolver {
     }
 
     fun addChild(creds: Credential, personal: Personal, parentName: String): String? {
-        val user = userService.userRepository.findUserByUsername(parentName)
+        val user = userService.userRepository.findUserByUsername(parentName) ?: return null
         val child = ChildUserEntity(firstName = personal.firstName,
                 lastName = personal.lastName,
                 password = creds.password,
