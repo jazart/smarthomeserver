@@ -3,8 +3,9 @@ package com.home.smarthomeserver.devices;
 import com.amazonaws.services.iot.client.AWSIotDevice;
 import com.amazonaws.services.iot.client.AWSIotDeviceProperty;
 
-public class Light extends AWSIotDevice {
+class Light extends AWSIotDevice {
     @AWSIotDeviceProperty
+    private
     int power;
 
     public Light(String thingName) {

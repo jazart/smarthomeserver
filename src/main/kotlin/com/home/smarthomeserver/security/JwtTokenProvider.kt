@@ -4,10 +4,10 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Bean
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Component
 import java.util.*
 import javax.servlet.http.HttpServletRequest
@@ -19,6 +19,9 @@ class JwtTokenProvider {
     @Autowired
     lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
 
+    @Autowired
+    lateinit var authenticationManager: AuthenticationManager
+
     fun createToken(username: String): String =
             JWT.create().run {
                 withSubject(userDetailsServiceImpl.loadUserByUsername(username).username)
@@ -28,7 +31,7 @@ class JwtTokenProvider {
                 sign(Algorithm.HMAC512(SECRET.toByteArray()))
             }
 
-
+    @Throws(UsernameNotFoundException::class)
     fun getAuthentication(token: String): Authentication {
         val userName = getUsername(token)
         val details = userDetailsServiceImpl.loadUserByUsername(userName)

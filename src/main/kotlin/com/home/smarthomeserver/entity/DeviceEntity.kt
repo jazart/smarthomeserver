@@ -9,6 +9,9 @@ import javax.persistence.*
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Table(
+        uniqueConstraints = [UniqueConstraint(columnNames = ["name", "parent_id"])]
+)
 open class DeviceEntity(
         open var name: String = "",
 
@@ -18,26 +21,34 @@ open class DeviceEntity(
         @Enumerated(EnumType.STRING)
         open var status: Status = Status.DISCONNECTED,
 
-        @ElementCollection
+        @Enumerated(EnumType.STRING)
+        @ElementCollection(targetClass = Command::class)
         open var commands: MutableList<Command> = mutableListOf(),
 
-        @ManyToOne(cascade = [CascadeType.REFRESH, CascadeType.MERGE])
-        @JoinColumn(name = "devices")
-        open var owner: ParentUserEntity
+        @ManyToOne
+        @JoinColumn(name = "parent_id")
+        open var owner: ParentUserEntity,
+
+        @Column(nullable = false)
+        open var favorite: Boolean = false,
+
+        @Column(nullable = false, unique = true, updatable = false)
+        open var thingName: String
 
 )
 
 
 @Entity
-data class LightEntity(override var name: String = "LightEntity",
+data class LightEntity(override var name: String,
                        override var commands: MutableList<Command> = mutableListOf(Command.PULSE, Command.TURN_OFF, Command.TURN_ON),
 
                        @Id @GeneratedValue(strategy = GenerationType.AUTO)
                        override val id: Long,
 
                        @Column(nullable = false)
-                       override var owner: ParentUserEntity)
-    : DeviceEntity(name, commands = commands, id = id, owner = owner)
+                       override var owner: ParentUserEntity,
+                       override var thingName: String)
+    : DeviceEntity(name, commands = commands, id = id, owner = owner, thingName = thingName)
 
 fun DeviceEntity.toDeviceDomain(owner: ParentUser) = Device(
         name = this.name,
@@ -47,7 +58,7 @@ fun DeviceEntity.toDeviceDomain(owner: ParentUser) = Device(
         owner = owner
 )
 
-fun LightEntity.toDeviceDomain() = Light (
+fun LightEntity.toDeviceDomain() = Light(
         name = this.name,
         commands = this.commands,
         id = this.id

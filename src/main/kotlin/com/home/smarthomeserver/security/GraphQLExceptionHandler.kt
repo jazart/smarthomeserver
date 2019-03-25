@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 class GraphQLExceptionHandler {
 
     @ExceptionHandler(Exception::class)
-    fun handleException(e: Exception): GraphQLError {
+    fun handleExcepztion(e: Exception): GraphQLError {
         return ThrowableGraphQLError(e)
     }
 

@@ -1,22 +1,17 @@
 package com.home.smarthomeserver
 
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.io.Resource
-import org.springframework.jdbc.datasource.init.DataSourceInitializer
+import org.springframework.security.core.context.SecurityContextHolder
 import javax.sql.DataSource
+
+
 
 
 @Configuration
 class DatasourceConfig {
-
-    @Value("classpath:schema.sql")
-    lateinit var schemaScript: Resource
-
-    @Value("classpath:data.sql")
-    lateinit var data: Resource
 
     @Bean
     fun dataSource(): DataSource =
@@ -29,9 +24,12 @@ class DatasourceConfig {
             }
 
     @Bean
-    fun dataSourceInitializer(dataSource: DataSource): DataSourceInitializer =
-            DataSourceInitializer().apply {
-                setDataSource(dataSource)
-            }
+    fun methodInvokingFactoryBean(): MethodInvokingFactoryBean {
+        val methodInvokingFactoryBean = MethodInvokingFactoryBean()
+        methodInvokingFactoryBean.targetClass = SecurityContextHolder::class.java
+        methodInvokingFactoryBean.targetMethod = "setStrategyName"
+        methodInvokingFactoryBean.setArguments((SecurityContextHolder.MODE_INHERITABLETHREADLOCAL))
+        return methodInvokingFactoryBean
+    }
 }
 

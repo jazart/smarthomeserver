@@ -31,12 +31,13 @@ data class ParentUserEntity(
         override val lastName: String = "",
 
         @Id @GeneratedValue(strategy = GenerationType.AUTO)
+        @Column(name = "parent_id")
         override var id: Long,
 
-        @OneToMany(cascade = [CascadeType.MERGE, CascadeType.REFRESH], fetch = FetchType.EAGER)
+        @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER, mappedBy = "parent", orphanRemoval = true)
         var family: MutableList<ChildUserEntity> = mutableListOf(),
 
-        @OneToMany(cascade = [CascadeType.MERGE, CascadeType.REFRESH], fetch = FetchType.LAZY)
+        @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, mappedBy = "owner", orphanRemoval = true)
         @Column(nullable = false)
         var devices: MutableList<DeviceEntity> = mutableListOf(),
 
@@ -65,8 +66,8 @@ data class ChildUserEntity(
 
         override var password: String,
 
-        @ManyToOne(cascade = [CascadeType.MERGE, CascadeType.REFRESH])
-        @JoinColumn(name = "familyId")
+        @ManyToOne(cascade = [CascadeType.ALL])
+        @JoinColumn(name = "parent_id")
         var parent: ParentUserEntity) : User
 
 fun ParentUserEntity.toUserDomain(): ParentUser {
@@ -75,10 +76,9 @@ fun ParentUserEntity.toUserDomain(): ParentUser {
             lastName = this.lastName,
             username = this.username
     )
-
-    val domainDevices = this.devices.map { dev -> dev.toDeviceDomain(parentUserDomain) }.toMutableList()
+    val domainDevices = this.devices.map { dev -> dev.toDeviceDomain(parentUserDomain) }
     parentUserDomain.devices.addAll(domainDevices)
-    val familyDomain = this.family.map { fam -> fam.toUserDomain(parentUserDomain) }.toMutableList()
+    val familyDomain = this.family.map { fam -> fam.toUserDomain(parentUserDomain) }
     parentUserDomain.family.addAll(familyDomain)
     return parentUserDomain
 }
@@ -108,6 +108,4 @@ interface User {
 
     val email: String
         get() = ""
-
-
 }
