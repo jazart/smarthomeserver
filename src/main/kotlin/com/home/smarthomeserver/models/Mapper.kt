@@ -34,7 +34,7 @@ class Mapper {
     }
 
     fun toDeviceEntity(device: Device): DeviceEntity {
-        val retrievedDevice = deviceRepository.findDeviceEntityById(device.id)
+        val retrievedDevice = deviceRepository.findDeviceEntityByNameAndOwnerUsername(device.name, device.owner)
         retrievedDevice?.status = device.status
         retrievedDevice?.commands = device.commands
         return retrievedDevice ?: throw Exception("This should never happen")

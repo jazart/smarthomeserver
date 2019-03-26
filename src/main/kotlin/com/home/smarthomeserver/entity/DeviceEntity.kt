@@ -54,14 +54,12 @@ fun DeviceEntity.toDeviceDomain(owner: ParentUser) = Device(
         name = this.name,
         status = this.status,
         commands = this.commands,
-        id = this.id,
-        owner = owner
+        owner = owner.username
 )
 
 fun LightEntity.toDeviceDomain() = Light(
         name = this.name,
-        commands = this.commands,
-        id = this.id
+        commands = this.commands
 )
 
 enum class Status {

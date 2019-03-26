@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional(propagation = Propagation.REQUIRED)
 class UserService {
 
     @Autowired
@@ -69,14 +70,15 @@ class UserService {
     }
 
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    fun getUserByName(username: String): ParentUser? = userRepository.findUserByUsername(username)?.toUserDomain()
+    fun getUserByName(username: String): ParentUser? {
+        return getUserEntity(username).toUserDomain()
+    }
 
-    @Transactional(propagation = Propagation.REQUIRED)
     fun getUserEntity(username: String, fetchEager: Boolean = true): ParentUserEntity {
         val parent = userRepository.findUserByUsername(username) ?: throw Exception("User not found")
         if(fetchEager) {
             val size = parent.devices.size
+            val commnds = parent.devices.sumBy { it.commands.size}
         }
         return parent
     }
