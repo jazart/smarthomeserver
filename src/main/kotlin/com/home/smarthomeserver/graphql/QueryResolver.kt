@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class DeviceResolver : QueryResolver() {
-    fun device(type: DeviceType?) = Device(name = "dev", status = Status.DISCONNECTED, commands = mutableListOf(), owner = "god")
+    fun device(type: DeviceType?) = Device(name = "dev", status = Status.DISCONNECTED, commands = mutableListOf(), owner = "god", type = DeviceType.CAMERA)
 }
 
 @Component

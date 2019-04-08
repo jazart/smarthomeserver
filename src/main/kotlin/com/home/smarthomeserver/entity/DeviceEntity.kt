@@ -1,9 +1,6 @@
 package com.home.smarthomeserver.entity
 
-import com.home.smarthomeserver.models.Command
-import com.home.smarthomeserver.models.Device
-import com.home.smarthomeserver.models.Light
-import com.home.smarthomeserver.models.ParentUser
+import com.home.smarthomeserver.models.*
 import javax.persistence.*
 
 
@@ -19,7 +16,7 @@ open class DeviceEntity(
         open val id: Long,
 
         @Enumerated(EnumType.STRING)
-        open var status: Status = Status.DISCONNECTED,
+        open var status: Status = Status.CONNECTED,
 
         @Enumerated(EnumType.STRING)
         @ElementCollection(targetClass = Command::class)
@@ -33,7 +30,10 @@ open class DeviceEntity(
         open var favorite: Boolean = false,
 
         @Column(nullable = false, unique = true, updatable = false)
-        open var thingName: String
+        open var thingName: String,
+
+        @Enumerated(EnumType.STRING)
+        open var type: DeviceType?
 
 )
 
@@ -48,13 +48,15 @@ data class LightEntity(override var name: String,
                        @Column(nullable = false)
                        override var owner: ParentUserEntity,
                        override var thingName: String)
-    : DeviceEntity(name, commands = commands, id = id, owner = owner, thingName = thingName)
+    : DeviceEntity(name, commands = commands, id = id, owner = owner, thingName = thingName, type = DeviceType.LIGHT)
 
 fun DeviceEntity.toDeviceDomain(owner: ParentUser) = Device(
         name = this.name,
         status = this.status,
         commands = this.commands,
-        owner = owner.username
+        owner = owner.username,
+        isFavorite = favorite,
+    type = this.type ?: DeviceType.CAMERA
 )
 
 fun LightEntity.toDeviceDomain() = Light(

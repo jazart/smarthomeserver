@@ -9,7 +9,11 @@ data class Device  (
 
         val commands: MutableList<Command>,
 
-        val owner: String
+        val owner: String,
+
+        val isFavorite: Boolean = false,
+
+        val type: DeviceType? = DeviceType.HOME_TEMPERATURE
 
 )
 

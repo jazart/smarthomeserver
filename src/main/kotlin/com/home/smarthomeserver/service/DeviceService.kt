@@ -54,8 +54,9 @@ class DeviceService {
                 val user = userService.getUserEntity(deviceInfo.username)
                 val deviceEntity = DeviceEntity(
                         name = deviceInfo.deviceName,
-                        commands = mutableListOf(),
-                        id = 1L, owner = user, thingName = newThingName)
+                        commands = deviceInfo.command,
+                        favorite = deviceInfo.isFavorite,
+                        id = 1L, owner = user, thingName = newThingName, type = deviceInfo.type)
                 user.devices.add(deviceEntity)
                 userService.userRepository.save(user)
             }
@@ -91,7 +92,7 @@ class DeviceService {
                 newFavorite.favorite = true
                 saveAll(listOf(prevFavorite, newFavorite))
             }
-        return deviceInfo.deviceName
+            return deviceInfo.deviceName
         }
     }
 
@@ -105,7 +106,7 @@ class DeviceService {
     }
 
     fun modifyDeviceName(deviceInfo: DeviceInfo, newName: String): String? {
-        val device = deviceRepository.findDeviceEntityByNameAndOwnerUsername(deviceInfo.deviceName,deviceInfo.username)
+        val device = deviceRepository.findDeviceEntityByNameAndOwnerUsername(deviceInfo.deviceName, deviceInfo.username)
         device?.apply {
             name = newName
             deviceRepository.save(this)

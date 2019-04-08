@@ -12,7 +12,6 @@ import graphql.GraphQLException
 import graphql.schema.DataFetchingEnvironment
 import kotlinx.coroutines.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import software.amazon.awssdk.services.iot.model.ResourceAlreadyExistsException
 import software.amazon.awssdk.services.iot.model.ThrottlingException
@@ -112,19 +111,20 @@ class MutationResolver : GraphQLMutationResolver {
 //        val headers = req.headerNames
 //        val token = req.getHeader(TOKEN_PREFIX)
 
-        val auth = SecurityContextHolder.getContext().authentication
-        val name = auth.name
-        val authorities = auth.authorities
-
-        return mutationScope.async {
-            val result = mutableListOf<String>()
-            withContext(Dispatchers.IO) {
-                devices.forEach {
-                    if (deviceService.removeDevice(DeviceInfo(username, it))) result.add(it)
-                }
-                return@withContext result.toList()
-            }
-        }.await()
+//        val auth = SecurityContextHolder.getContext().authentication
+//        val name = auth.name
+//        val authorities = auth.authorities
+//
+//        return mutationScope.async {
+//            val result = mutableListOf<String>()
+//            withContext(Dispatchers.IO) {
+//                devices.forEach {
+//                    if (deviceService.removeDevice(DeviceInfo(username, it))) result.add(it)
+//                }
+//                return@withContext result.toList()
+//            }
+//        }.await()
+        return null
     }
 
     fun addFavorite(deviceInfo: DeviceInfo): String? {

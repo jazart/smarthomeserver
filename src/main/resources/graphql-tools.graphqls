@@ -43,6 +43,8 @@ type Device {
     status: Status!
     owner: String!
     commands: [Command]
+    isFavorite: Boolean!
+    type: DeviceType!
 }
 
 enum Status {
@@ -79,4 +81,7 @@ input Personal {
 input DeviceInfo {
     username: String!
     deviceName: String!
+    isFavorite: Boolean
+    command: [Command]
+    type: DeviceType!
 }
