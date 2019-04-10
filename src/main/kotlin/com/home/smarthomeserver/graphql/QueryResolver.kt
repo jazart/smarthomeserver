@@ -27,6 +27,7 @@ class UserDeviceResolver : GraphQLResolver<ParentUser> {
     fun devices(user: ParentUser): List<Device> {
         return userService.getUserByName(user.username)?.devices?.toList() ?: emptyList()
     }
+
 }
 
 @Component

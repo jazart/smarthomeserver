@@ -8,6 +8,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}"){
             exclude group: 'org.eclipse.paho', module: 'org.eclipse.paho.client.mqttv3'
         }
@@ -51,9 +52,10 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    // IOT deps
+    // AWS deps
     implementation 'com.amazonaws:aws-iot-device-sdk-java:1.2.0'
     implementation 'software.amazon.awssdk:iot:2.5.10'
+    implementation 'software.amazon.awssdk:s3:2.5.25'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
 
     // GraphQL deps

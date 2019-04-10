@@ -28,6 +28,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 .authorizeRequests()
                 .antMatchers("/graphql").permitAll()
                 .antMatchers("/graphiql").permitAll()
+                .antMatchers("/images").permitAll()
                 .anyRequest().authenticated()
                 .and().formLogin()
 
