@@ -59,9 +59,9 @@ class MutationResolver : GraphQLMutationResolver {
 
     @Unsecured
     fun sendCommand(deviceInfo: DeviceInfo, deviceType: DeviceType, command: Command): Command? {
-        deviceService.run {
-            updateDeviceStatus(deviceInfo, command)
-        }
+//        deviceService.run {
+//            updateDeviceStatus(deviceInfo, command)
+//        }
         return command
     }
 

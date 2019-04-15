@@ -5,9 +5,7 @@ import com.amazonaws.services.iot.client.AWSIotDevice
 import com.amazonaws.services.iot.client.AWSIotMqttClient
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.home.smarthomeserver.awsconfig.AwsIotClient
-import com.home.smarthomeserver.devices.RPILight
 import com.home.smarthomeserver.entity.DeviceEntity
-import com.home.smarthomeserver.entity.Status
 import com.home.smarthomeserver.models.Command
 import com.home.smarthomeserver.models.DeviceInfo
 import com.home.smarthomeserver.repository.DeviceRepository
@@ -33,10 +31,10 @@ class DeviceService {
     lateinit var deviceRepository: DeviceRepository
 
     fun updateDeviceStatus(deviceInfo: DeviceInfo, command: Command) {
-        val device = RPILight(deviceInfo.deviceName)
+        val device = AWSIotDevice(deviceInfo.deviceName)
         connect(device)
-        device.command = command.toString()
-        device.status = Status.CONNECTED.toString()
+//        device.command = command.toString()
+//        device.status = Status.CONNECTED.toString()
         val json = buildJson(mapOf("command" to "$command"))
         device.update(json)
     }
@@ -119,7 +117,7 @@ class DeviceService {
         val stateObject = ObjectMapper().createObjectNode()
         val desiredNode = ObjectMapper().createObjectNode()
         val attributeNode = ObjectMapper().createObjectNode()
-        shadowValues.forEach { attr, value ->
+        shadowValues.forEach { (attr, value) ->
             attributeNode.put(attr, value)
         }
         desiredNode.putPOJO("desired", attributeNode)
