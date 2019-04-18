@@ -22,7 +22,7 @@ object AwsCredentials {
 
     val creds: AwsBasicCredentials by lazy {
         AwsBasicCredentials.create(
-                System.getenv("AWS_ACCESS_KEY"),
+                System.getenv("AWS_ACCESS_KEY_ID"),
                 System.getenv("AWS_SECRET_KEY")
         )
     }
