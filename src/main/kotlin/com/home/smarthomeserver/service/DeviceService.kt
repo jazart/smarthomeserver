@@ -41,8 +41,8 @@ class DeviceService {
 
     @Throws(Exception::class)
     suspend fun addDevice(deviceInfo: DeviceInfo): Boolean {
-        val newThingName = deviceInfo.deviceName +
-                userService.userRepository.findUserByUsername(deviceInfo.username)?.id
+        val newThingName = deviceInfo.deviceName.plus(userService.userRepository.findUserByUsername(deviceInfo.username)?.id)
+                .toSnakeCase()
         val thingResponse = AwsIotClient.get().createThing(CreateThingRequest.builder().run {
             thingName(newThingName)
             build()
@@ -135,4 +135,8 @@ class DeviceService {
         }
         println("==========connected=================")
     }
+}
+
+fun String.toSnakeCase(): String {
+    return this.replace(" ", "").toList().joinToString("_")
 }
