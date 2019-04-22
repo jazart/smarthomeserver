@@ -43,7 +43,7 @@ object AwsS3Client {
         }
 
         val req = SdkHttpFullRequest.builder().run {
-            encodedPath(PATH_PREFIX.plus(bucket.contents()[1].key()))
+            encodedPath(PATH_PREFIX.plus(bucket.contents().first { obj -> obj.key() == "Demo.png" }.key()))
             host(HOST)
             method(SdkHttpMethod.GET)
             protocol(PROTOCOL)

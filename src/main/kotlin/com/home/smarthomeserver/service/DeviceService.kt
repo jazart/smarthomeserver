@@ -31,11 +31,11 @@ class DeviceService {
     lateinit var deviceRepository: DeviceRepository
 
     fun updateDeviceStatus(deviceInfo: DeviceInfo, command: Command) {
-        val device = AWSIotDevice(deviceInfo.deviceName)
+        val device = AWSIotDevice("Sony73")
         connect(device)
 //        device.command = command.toString()
 //        device.status = Status.CONNECTED.toString()
-        val json = buildJson(mapOf("command" to "$command"))
+        val json = buildJson(mapOf("video" to false))
         device.update(json)
     }
 
@@ -113,15 +113,19 @@ class DeviceService {
         return null
     }
 
-    private fun buildJson(shadowValues: Map<String, String>): String {
+    private fun buildJson(shadowValues: Map<String, Boolean>): String {
         val stateObject = ObjectMapper().createObjectNode()
         val desiredNode = ObjectMapper().createObjectNode()
+        val reportedNode = ObjectMapper().createObjectNode()
         val attributeNode = ObjectMapper().createObjectNode()
         shadowValues.forEach { (attr, value) ->
             attributeNode.put(attr, value)
         }
         desiredNode.putPOJO("desired", attributeNode)
-        stateObject.putPOJO("state", desiredNode)
+        reportedNode.putPOJO("reported", attributeNode)
+        stateObject.putPOJO("state", reportedNode)
+
+
         return stateObject.toString()
     }
 
