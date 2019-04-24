@@ -9,13 +9,22 @@ object AwsIotClient {
     private val client: IotAsyncClient = IotAsyncClient.builder().run {
         region(Region.US_WEST_2)
         credentialsProvider {
-            AwsBasicCredentials.create(
-                    System.getenv("AWS_ACCESS_KEY"),
-                    System.getenv("AWS_SECRET_KEY")
-            )
+            AwsCredentials.creds
         }
         build()
     }
 
-    @Synchronized fun get() = client
+    @Synchronized
+    fun get() = client
+}
+
+object AwsCredentials {
+
+    val creds: AwsBasicCredentials by lazy {
+        AwsBasicCredentials.create(
+                System.getenv("AWS_ACCESS_KEY_ID"),
+                System.getenv("AWS_SECRET_KEY")
+        )
+    }
+
 }

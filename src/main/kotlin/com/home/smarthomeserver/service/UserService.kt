@@ -71,11 +71,11 @@ class UserService {
 
 
     fun getUserByName(username: String): ParentUser? {
-        return getUserEntity(username).toUserDomain()
+        return getUserEntity(username.trim()).toUserDomain()
     }
 
     fun getUserEntity(username: String, fetchEager: Boolean = true): ParentUserEntity {
-        val parent = userRepository.findUserByUsername(username) ?: throw Exception("User not found")
+        val parent = userRepository.findUserByUsername(username.trim()) ?: throw Exception("User not found")
         if(fetchEager) {
             val size = parent.devices.size
             val commnds = parent.devices.sumBy { it.commands.size}

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration
 class AwsBroker {
     private val client: AWSIotMqttClient = AWSIotMqttClient(System.getenv("AWS_CLIENT_ENDPOINT"),
             System.getenv("AWS_CLIENT_ID"),
-            System.getenv("AWS_ACCESS_KEY"),
+            System.getenv("AWS_ACCESS_KEY_ID"),
             System.getenv("AWS_SECRET_KEY")
     )
 

@@ -31,28 +31,28 @@ class MutationResolver : GraphQLMutationResolver {
     @Unsecured
     @Throws(SignupException::class)
     fun signup(creds: Credential, info: Personal): String? {
-        val user = ParentUserEntity(firstName = info.firstName,
-                lastName = info.lastName,
-                password = creds.password,
-                username = creds.username, id = 0L, email = info.email)
+        val user = ParentUserEntity(firstName = info.firstName.trim(),
+                lastName = info.lastName.trim(),
+                password = creds.password.trim(),
+                username = creds.username.trim(), id = 0L, email = info.email.trim())
         return userService.signUp(user)
     }
 
     @Unsecured
     @Throws(SignupException::class)
     fun login(name: String, pass: String): String? {
-        return userService.login(name, pass)
+        return userService.login(name.trim(), pass.trim())
     }
 
     fun addChild(creds: Credential, personal: Personal, parentName: String): String? {
         val user = userService.userRepository.findUserByUsername(parentName) ?: return null
         val child = ChildUserEntity(firstName = personal.firstName,
-                lastName = personal.lastName,
-                password = creds.password,
+                lastName = personal.lastName.trim(),
+                password = creds.password.trim(),
                 parent = user,
                 id = 0,
-                username = creds.username,
-                email = personal.email)
+                username = creds.username.trim(),
+                email = personal.email.trim())
         userService.addChild(user, child)
         return "Ok"
     }
