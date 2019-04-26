@@ -10,6 +10,7 @@ import com.home.smarthomeserver.devices.PiCamera
 import com.home.smarthomeserver.entity.DeviceEntity
 import com.home.smarthomeserver.models.Command
 import com.home.smarthomeserver.models.DeviceInfo
+import com.home.smarthomeserver.models.DeviceType
 import com.home.smarthomeserver.repository.DeviceRepository
 import kotlinx.coroutines.future.await
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,7 +36,11 @@ class DeviceService {
     fun updateDeviceStatus(deviceInfo: DeviceInfo, command: Command) {
         val device = deviceRepository.findDeviceEntityByNameAndOwnerUsername(
                 deviceInfo.deviceName, deviceInfo.username) ?: throw Exception("Device not found")
-        val thing = PiCamera(device.thingName)
+        val thing = when (deviceInfo.type) {
+            DeviceType.CAMERA -> PiCamera(device.thingName)
+//            DeviceType.LIGHT -> LedLight(device.thingName)
+            else -> throw Exception("Unknown device type")
+        }
         thing.shadowUpdateQos = AWSIotQos.QOS1
         connect(thing)
         thing.video = false
@@ -151,8 +156,9 @@ class DeviceService {
 
         println("==========connected=================")
     }
+
 }
 
 fun String.toSnakeCase(): String {
-    return this.replace(" ", "").toList().joinToString("_")
+    return this.replace(" ", "_")
 }
