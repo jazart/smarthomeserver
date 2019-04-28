@@ -37,12 +37,10 @@ class DeviceService {
                 deviceInfo.deviceName, deviceInfo.username) ?: throw Exception("Device not found")
         val thing = PiCamera(device.thingName)
         thing.shadowUpdateQos = AWSIotQos.QOS1
-        connect(thing)
-        thing.video = false
-//        device.command = command.toString()
-//        device.status = Status.CONNECTED.toString()
-//        val json = buildJson(mapOf("video" to false))
-//        device.update(json)
+        if (command == Command.SNAP) {
+            connect(thing)
+            thing.video = false
+        }
     }
 
     @Throws(Exception::class)
