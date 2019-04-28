@@ -17,9 +17,9 @@ class DatasourceConfig {
     fun dataSource(): DataSource =
             DataSourceBuilder.create().run {
                 driverClassName("org.postgresql.Driver")
-                username("postgres")
-                password("root")
-                url("jdbc:postgresql://localhost:5432/postgres")
+                username(System.getenv("RDS_USERNAME"))
+                password(System.getenv("RDS_PASSWORD"))
+                url("jdbc:postgresql://" + System.getenv("RDS_HOSTNAME") + ":5432/postgres")
                 build()
             }
 

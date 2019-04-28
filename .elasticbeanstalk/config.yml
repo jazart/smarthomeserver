@@ -5,6 +5,8 @@ branch-defaults:
     environment: SmartHomeServer-env
   client:
     environment: SmartHomeServer-env
+  device_resolve:
+    environment: SmartHomeServer-env
   login_add_device:
     environment: SmartHomeServer-env
   master:
