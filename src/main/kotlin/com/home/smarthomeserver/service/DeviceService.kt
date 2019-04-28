@@ -39,13 +39,13 @@ class DeviceService {
         thing.shadowUpdateQos = AWSIotQos.QOS1
         if (command == Command.SNAP) {
             connect(thing)
-            thing.video = false
+            thing.camera = true
         }
     }
 
     @Throws(Exception::class)
     suspend fun addDevice(deviceInfo: DeviceInfo): Boolean {
-        val newThingName = deviceInfo.deviceName.plus(userService.userRepository.findUserByUsername(deviceInfo.username)?.id)
+        val newThingName = deviceInfo.deviceName.plus(userService.userRepository.findUserByUsername(deviceInfo.username)?.id).trim()
                 .toSnakeCase()
         val thingResponse = AwsIotClient.get().createThing(CreateThingRequest.builder().run {
             thingName(newThingName)
@@ -152,5 +152,5 @@ class DeviceService {
 }
 
 fun String.toSnakeCase(): String {
-    return this.replace(" ", "").toList().joinToString("_")
+    return this.replace(" ", "_")
 }
