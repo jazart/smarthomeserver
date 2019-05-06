@@ -44,17 +44,17 @@ class DeviceService {
                 System.getenv("AWS_SECRET_KEY")
         )
 
-        if(deviceInfo.type == DeviceType.LIGHT) {
+        if (deviceInfo.type == DeviceType.LIGHT) {
             updateCameraCommand(command, RPILight(device.thingName), client)
         }
         val thing = PiCamera(device.thingName)
         thing.shadowUpdateQos = AWSIotQos.QOS1
         if (command == Command.SNAP) {
             connect(thing, 0L, client)
-            thing.update(buildJson(null, mapOf("camera" to true, "stream" to false)))
+            thing.update(buildJson(mapOf("url" to ""), mapOf("camera" to true, "stream" to false)))
             thing.camera = true
             thing.stream = false
-        } else if(command == Command.STREAM) {
+        } else if (command == Command.STREAM) {
             sendStreamCommand(deviceInfo, command, client)
         }
         cleanup(client)
@@ -71,11 +71,11 @@ class DeviceService {
         val thing = PiCamera(device.thingName)
         connect(thing, 0L, client)
         thing.shadowUpdateQos = AWSIotQos.QOS1
-        thing.update(buildJson(mapOf("url" to ""), mapOf("url" to "", "stream" to true)))
+        thing.update(buildJson(mapOf("url" to ""), mapOf("url" to "", "stream" to true, "camera" to false)))
         println("================= ${thing.url} ============")
         var streamUrl = ""
 
-        while(streamUrl.isBlank()) {
+        while (streamUrl.isBlank()) {
             streamUrl = String(thing.url.toByteArray())
             thing.url = ""
             thing.camera = false
@@ -177,24 +177,20 @@ class DeviceService {
 
     private fun buildJson(shadowValues: Map<String, String>?, reportedValues: Map<String, Any>): String {
         val stateObject = ObjectMapper().createObjectNode()
-        val desiredNode = ObjectMapper().createObjectNode()
-        val reportedNode = ObjectMapper().createObjectNode()
         val attributeNode = ObjectMapper().createObjectNode()
         val reportedAttrs = ObjectMapper().createObjectNode()
         shadowValues?.forEach { (attr, value) ->
             attributeNode.put(attr, value)
         }
         reportedValues.forEach { (attr, value) ->
-            when(value) {
+            when (value) {
                 is String -> reportedAttrs.put(attr, value)
                 is Boolean -> reportedAttrs.put(attr, value)
             }
         }
-        desiredNode.putPOJO("desired", attributeNode)
-        reportedNode.putPOJO("reported", reportedAttrs)
-        stateObject.putPOJO("state", desiredNode)
-        stateObject.putPOJO("state", reportedNode)
-
+        stateObject.putPOJO("state", ObjectMapper().createObjectNode()
+                        .putPOJO("desired", attributeNode)
+                        .putPOJO("reported", reportedAttrs))
         return stateObject.toString()
     }
 
