@@ -71,7 +71,7 @@ class DeviceService {
         val thing = PiCamera(device.thingName)
         connect(thing, 0L, client)
         thing.shadowUpdateQos = AWSIotQos.QOS1
-        thing.update(buildJson(mapOf("url" to ""), mapOf("url" to "", "stream" to true, "camera" to false)))
+        thing.update(buildJson(null, mapOf("stream" to true, "camera" to false)))
         println("================= ${thing.url} ============")
         var streamUrl = ""
 
@@ -80,6 +80,7 @@ class DeviceService {
             thing.url = ""
             thing.camera = false
         }
+        cleanup(client)
         return streamUrl
     }
 
