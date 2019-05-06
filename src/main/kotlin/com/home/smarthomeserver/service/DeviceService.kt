@@ -7,9 +7,11 @@ import com.amazonaws.services.iot.client.AWSIotQos
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.home.smarthomeserver.awsconfig.AwsIotClient
 import com.home.smarthomeserver.devices.PiCamera
+import com.home.smarthomeserver.devices.RPILight
 import com.home.smarthomeserver.entity.DeviceEntity
 import com.home.smarthomeserver.models.Command
 import com.home.smarthomeserver.models.DeviceInfo
+import com.home.smarthomeserver.models.DeviceType
 import com.home.smarthomeserver.repository.DeviceRepository
 import kotlinx.coroutines.future.await
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,12 +37,69 @@ class DeviceService {
     fun updateDeviceStatus(deviceInfo: DeviceInfo, command: Command) {
         val device = deviceRepository.findDeviceEntityByNameAndOwnerUsername(
                 deviceInfo.deviceName, deviceInfo.username) ?: throw Exception("Device not found")
+
+        val client = AWSIotMqttClient(System.getenv("AWS_CLIENT_ENDPOINT"),
+                System.getenv("AWS_CLIENT_ID"),
+                System.getenv("AWS_ACCESS_KEY_ID"),
+                System.getenv("AWS_SECRET_KEY")
+        )
+
+        if(deviceInfo.type == DeviceType.LIGHT) {
+            updateCameraCommand(command, RPILight(device.thingName), client)
+        }
         val thing = PiCamera(device.thingName)
         thing.shadowUpdateQos = AWSIotQos.QOS1
         if (command == Command.SNAP) {
-            connect(thing)
+            connect(thing, 0L, client)
+            thing.update(buildJson(null, mapOf("camera" to true, "stream" to false)))
             thing.camera = true
+            thing.stream = false
+        } else if(command == Command.STREAM) {
+            sendStreamCommand(deviceInfo, command, client)
         }
+        cleanup(client)
+    }
+
+    fun updateCameraCommand(command: Command, thing: RPILight, client: AWSIotMqttClient) {
+        connect(thing, 0L, client)
+        thing.update(buildJson(null, mapOf("command" to command.name)))
+    }
+
+    fun sendStreamCommand(deviceInfo: DeviceInfo, command: Command, client: AWSIotMqttClient): String {
+        val device = deviceRepository.findDeviceEntityByNameAndOwnerUsername(
+                deviceInfo.deviceName, deviceInfo.username) ?: throw Exception("Device not found")
+        val thing = PiCamera(device.thingName)
+        connect(thing, 0L, client)
+        thing.shadowUpdateQos = AWSIotQos.QOS1
+        thing.update(buildJson(mapOf("url" to ""), mapOf("url" to "", "stream" to true)))
+        println("================= ${thing.url} ============")
+        var streamUrl = ""
+
+        while(streamUrl.isBlank()) {
+            streamUrl = String(thing.url.toByteArray())
+            thing.url = ""
+            thing.camera = false
+        }
+        return streamUrl
+    }
+
+    private fun connect(device: AWSIotDevice, reportInterval: Long, client: AWSIotMqttClient) {
+        device.reportInterval = reportInterval
+        device.deviceReportQos = AWSIotQos.QOS1
+        device.methodAckQos = AWSIotQos.QOS1
+        device.methodQos = AWSIotQos.QOS1
+
+
+        client.serverAckTimeout = 5000
+        client.connectionTimeout = 10000
+        client.attach(device)
+
+        if (client.connectionStatus == AWSIotConnectionStatus.DISCONNECTED) {
+            println("Not connected yet --------> connecting ----------> NOW")
+            client.connect()
+            println("==========connected=================")
+        }
+
     }
 
     @Throws(Exception::class)
@@ -67,7 +126,6 @@ class DeviceService {
         }
         return thingResponse.sdkHttpResponse().isSuccessful
     }
-
 
     suspend fun removeDevice(deviceInfo: DeviceInfo): Boolean {
         val deviceToDelete = deviceRepository.findDeviceEntityByNameAndOwnerUsername(deviceInfo.deviceName, deviceInfo.username)
@@ -117,38 +175,33 @@ class DeviceService {
         return null
     }
 
-    private fun buildJson(shadowValues: Map<String, Boolean>): String {
+    private fun buildJson(shadowValues: Map<String, String>?, reportedValues: Map<String, Any>): String {
         val stateObject = ObjectMapper().createObjectNode()
         val desiredNode = ObjectMapper().createObjectNode()
         val reportedNode = ObjectMapper().createObjectNode()
         val attributeNode = ObjectMapper().createObjectNode()
-        shadowValues.forEach { (attr, value) ->
+        val reportedAttrs = ObjectMapper().createObjectNode()
+        shadowValues?.forEach { (attr, value) ->
             attributeNode.put(attr, value)
         }
+        reportedValues.forEach { (attr, value) ->
+            when(value) {
+                is String -> reportedAttrs.put(attr, value)
+                is Boolean -> reportedAttrs.put(attr, value)
+            }
+        }
         desiredNode.putPOJO("desired", attributeNode)
-        reportedNode.putPOJO("reported", attributeNode)
+        reportedNode.putPOJO("reported", reportedAttrs)
         stateObject.putPOJO("state", desiredNode)
-
+        stateObject.putPOJO("state", reportedNode)
 
         return stateObject.toString()
     }
 
-    private fun connect(device: AWSIotDevice) {
-        device.reportInterval = 5000L
-        device.deviceReportQos = AWSIotQos.QOS1
-        device.methodAckQos = AWSIotQos.QOS1
-        device.methodQos = AWSIotQos.QOS1
-        broker.serverAckTimeout = 5000
-        broker.connectionTimeout = 10000
-        broker.attach(device)
-
-        if (broker.connectionStatus == AWSIotConnectionStatus.DISCONNECTED) {
-            println("Not connected yet --------> connecting ----------> NOW")
-            broker.connect(2000)
-        }
-
-        println("==========connected=================")
+    fun cleanup(client: AWSIotMqttClient) {
+        client.disconnect()
     }
+
 }
 
 fun String.toSnakeCase(): String {

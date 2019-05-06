@@ -8,6 +8,7 @@ type Mutation {
     signup(creds: Credential!, info: Personal): String
     login(name: String!, pass: String!): String
     sendCommand(deviceInfo: DeviceInfo!, deviceType: DeviceType!, command: Command!): Command
+    startStreamCommand(deviceInfo: DeviceInfo!, command: Command!): String
     addChild(creds: Credential, info: Personal, parentName: String): String
     addDevice(deviceInfo: DeviceInfo!, type: DeviceType!): String
     removeDevice(deviceInfo: DeviceInfo!): String

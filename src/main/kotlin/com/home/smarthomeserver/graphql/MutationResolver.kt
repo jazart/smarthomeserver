@@ -1,5 +1,6 @@
 package com.home.smarthomeserver.graphql
 
+import com.amazonaws.services.iot.client.AWSIotMqttClient
 import com.coxautodev.graphql.tools.GraphQLMutationResolver
 import com.home.smarthomeserver.SignupException
 import com.home.smarthomeserver.entity.ChildUserEntity
@@ -63,6 +64,16 @@ class MutationResolver : GraphQLMutationResolver {
             updateDeviceStatus(deviceInfo, command)
         }
         return command
+    }
+
+    @Unsecured
+    fun startStreamCommand(deviceInfo: DeviceInfo, command: Command): String? {
+        val client: AWSIotMqttClient = AWSIotMqttClient(System.getenv("AWS_CLIENT_ENDPOINT"),
+                System.getenv("AWS_CLIENT_ID"),
+                System.getenv("AWS_ACCESS_KEY_ID"),
+                System.getenv("AWS_SECRET_KEY")
+        )
+        return deviceService.sendStreamCommand(deviceInfo, command, client)
     }
 
 
