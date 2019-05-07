@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
+/**
+ * Handles service level business logic for user profile related features
+ */
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
 class UserService {

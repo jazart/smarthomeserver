@@ -3,6 +3,7 @@ package com.home.smarthomeserver
 import com.home.smarthomeserver.entity.DeviceEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
 import com.home.smarthomeserver.models.DeviceInfo
+import com.home.smarthomeserver.models.DeviceType
 import com.home.smarthomeserver.repository.DeviceRepository
 import com.home.smarthomeserver.repository.ParentUserRepository
 import com.home.smarthomeserver.service.DeviceService
@@ -17,9 +18,7 @@ import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.context.annotation.Bean
 import org.springframework.test.context.junit4.SpringRunner
 
 @RunWith(SpringRunner::class)
@@ -48,7 +47,8 @@ class DeviceServiceTest {
                 id = 64L,
                 thingName = "test" + newUserEntity.id,
                 owner = newUserEntity,
-                favorite = true)
+                favorite = true,
+                type = DeviceType.CAMERA)
         Mockito.`when`(deviceRepository.findDeviceEntityByNameAndOwnerUsername("test", "Ken"))
                 .thenReturn(newDevice)
         Mockito.`when`(userRepository.findUserByUsername("Ken")).thenReturn(newUserEntity)
@@ -63,7 +63,7 @@ class DeviceServiceTest {
                     ?: fail("Device not found")
 
             // Act
-            val didDeviceAdd = deviceService.addDevice(deviceInfo = DeviceInfo(username = "Ken", deviceName = "test"))
+            val didDeviceAdd = deviceService.addDevice(deviceInfo = DeviceInfo(username = "Ken", deviceName = "test", type = DeviceType.CAMERA, isFavorite = false, command = mutableListOf()))
 
             // Assert
             assert(didDeviceAdd)
@@ -74,7 +74,7 @@ class DeviceServiceTest {
     fun `test remove device should remove from AWS`() {
         runBlocking {
             //Act
-            val didDeviceRemove = deviceService.removeDevice(deviceInfo = DeviceInfo(username = "Ken", deviceName = "test"))
+            val didDeviceRemove = deviceService.removeDevice(deviceInfo = DeviceInfo(username = "Ken", deviceName = "test", type = DeviceType.CAMERA, isFavorite = false, command = mutableListOf()))
 
             //Assert
             assert(didDeviceRemove)
@@ -85,7 +85,7 @@ class DeviceServiceTest {
     fun `test remove invalid device should return false`() {
         runBlocking {
             //Act
-            val didDeviceRemove = deviceService.removeDevice(deviceInfo = DeviceInfo(username = "Ken", deviceName = "newTest"))
+            val didDeviceRemove = deviceService.removeDevice(deviceInfo = DeviceInfo(username = "Ken", deviceName = "newTest", type = DeviceType.CAMERA, isFavorite = false, command = mutableListOf()))
 
             //Assert
             assertThat(didDeviceRemove).isFalse()
@@ -94,14 +94,14 @@ class DeviceServiceTest {
 
     @Test
     fun `test add favorite should return name of new favorite`() {
-        val newDeviceInfo = DeviceInfo(username = "Ken", deviceName = "test")
+        val newDeviceInfo = DeviceInfo(username = "Ken", deviceName = "test", type = DeviceType.CAMERA, isFavorite = false, command = mutableListOf())
         val favoriteName = deviceService.addFavorite(newDeviceInfo)
         assertThat(favoriteName).isEqualTo("test")
     }
 
     @Test
     fun `test remove favorite should name of removed favorite`() {
-        val newDeviceInfo = DeviceInfo(username = "Ken", deviceName = "test")
+        val newDeviceInfo = DeviceInfo(username = "Ken", deviceName = "test", type = DeviceType.CAMERA, isFavorite = false, command = mutableListOf())
         val favoriteName = deviceService.removeFavorite(newDeviceInfo)
         assertThat(favoriteName).isEqualTo("test")
         assertThat(newDevice.favorite).isFalse()
@@ -109,7 +109,7 @@ class DeviceServiceTest {
 
     @Test
     fun `test modify device should return new name`(){
-        val newDeviceInfo = DeviceInfo(username = "Ken", deviceName = "test")
+        val newDeviceInfo = DeviceInfo(username = "Ken", deviceName = "test", type = DeviceType.CAMERA, isFavorite = false, command = mutableListOf())
         val newName = deviceService.modifyDeviceName(newDeviceInfo, "newTest")
         assertThat(newName).isEqualTo("newTest")
 

@@ -6,7 +6,6 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-
 class JWTAuthorizationFilter(private val jwtTokenProvider: JwtTokenProvider)
     : OncePerRequestFilter() {
 

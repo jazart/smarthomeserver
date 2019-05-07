@@ -12,9 +12,13 @@ import org.springframework.stereotype.Component
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 
+/**
+ * This class handles JWT creation and validation.
+ */
 
 @Component
 class JwtTokenProvider {
+
 
     @Autowired
     lateinit var userDetailsServiceImpl: UserDetailsServiceImpl

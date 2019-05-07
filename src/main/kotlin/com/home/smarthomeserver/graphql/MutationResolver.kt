@@ -17,6 +17,10 @@ import org.springframework.stereotype.Component
 import software.amazon.awssdk.services.iot.model.ResourceAlreadyExistsException
 import software.amazon.awssdk.services.iot.model.ThrottlingException
 
+/**
+ * Handles all mutations (put/post/patch/delete) operations
+ * Each method corresponds to a single feature that the API offers.
+ */
 
 @Component
 class MutationResolver : GraphQLMutationResolver {

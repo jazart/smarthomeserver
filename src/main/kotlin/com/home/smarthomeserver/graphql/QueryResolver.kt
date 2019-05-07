@@ -13,6 +13,11 @@ import com.home.smarthomeserver.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+/**
+ * Handles query operations. Each method has a 1-1 match to conform to the GraphQL schema. Normally a GraphQL call only
+ * supports handling simple data types (numbers, strings, lists) however a field resolver will allow you to resolve custom
+ * objects and return more complex data types.
+ */
 
 @Component
 class DeviceResolver : QueryResolver() {

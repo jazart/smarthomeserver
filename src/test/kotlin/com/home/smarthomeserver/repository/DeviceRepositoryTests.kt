@@ -2,6 +2,7 @@ package com.home.smarthomeserver.repository
 
 import com.home.smarthomeserver.entity.DeviceEntity
 import com.home.smarthomeserver.entity.ParentUserEntity
+import com.home.smarthomeserver.models.DeviceType
 import org.assertj.core.api.Assertions.fail
 import org.junit.After
 import org.junit.Before
@@ -24,7 +25,7 @@ class DeviceRepositoryTests {
     lateinit var userRepository: ParentUserRepository
 
     private final val parent = ParentUserEntity("jaz", id = 1L, email = "", password = "1")
-    val device = DeviceEntity("test", 1L, owner = parent, thingName = "thing")
+    val device = DeviceEntity("test", 1L, owner = parent, thingName = "thing", type = DeviceType.CAMERA)
 
     @Before
     @Commit
@@ -37,7 +38,7 @@ class DeviceRepositoryTests {
     @Test
     fun `should throw error if duplicate device name added`() {
         // Arrange
-        val deviceDup = DeviceEntity("test", 2L, owner = parent, thingName = "t")
+        val deviceDup = DeviceEntity("test", 2L, owner = parent, thingName = "t", type = DeviceType.CAMERA)
 
         // Act
         try {
@@ -53,7 +54,7 @@ class DeviceRepositoryTests {
     @Test
     fun `should throw error if duplicate Thing name added`() {
         // Arrange
-        val deviceDup = DeviceEntity("aTest", 2L, owner = parent, thingName = "thing")
+        val deviceDup = DeviceEntity("aTest", 2L, owner = parent, thingName = "thing", type = DeviceType.CAMERA)
         // Act
         try {
             deviceRepository.save(deviceDup)

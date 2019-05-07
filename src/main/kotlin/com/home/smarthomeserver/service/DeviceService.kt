@@ -21,6 +21,12 @@ import org.springframework.transaction.annotation.Transactional
 import software.amazon.awssdk.services.iot.model.CreateThingRequest
 import software.amazon.awssdk.services.iot.model.DeleteThingRequest
 
+
+/**
+ * Performs business logic by taking data passed from the top level mutation resolver and interacting with the DB and other
+ * service level classes. All methods in this class are transactional, meaning if the method does not return then any db modification
+ * is rolled back.
+ */
 @Service
 @Transactional
 class DeviceService {
@@ -34,6 +40,10 @@ class DeviceService {
     @Autowired
     lateinit var deviceRepository: DeviceRepository
 
+    /**
+     * Updates the status of a device. First checks the type and updates the device's shadow state according to the given
+     * command.
+     */
     fun updateDeviceStatus(deviceInfo: DeviceInfo, command: Command) {
         val device = deviceRepository.findDeviceEntityByNameAndOwnerUsername(
                 deviceInfo.deviceName, deviceInfo.username) ?: throw Exception("Device not found")
@@ -45,7 +55,7 @@ class DeviceService {
         )
 
         if (deviceInfo.type == DeviceType.LIGHT) {
-            updateCameraCommand(command, RPILight(device.thingName), client)
+            updateLightCommand(command, RPILight(device.thingName), client)
         }
         val thing = PiCamera(device.thingName)
         thing.shadowUpdateQos = AWSIotQos.QOS1
@@ -60,11 +70,17 @@ class DeviceService {
         cleanup(client)
     }
 
-    fun updateCameraCommand(command: Command, thing: RPILight, client: AWSIotMqttClient) {
+    // Updates the Light thing to the given command sent by the user
+    fun updateLightCommand(command: Command, thing: RPILight, client: AWSIotMqttClient) {
         connect(thing, 0L, client)
         thing.update(buildJson(null, mapOf("command" to command.name)))
     }
 
+
+    /**
+     * Updates the thing shadow to an appropriate state to begin a stream on the thing. Once the stream begins a link to
+     * the stream is returned
+     */
     fun sendStreamCommand(deviceInfo: DeviceInfo, command: Command, client: AWSIotMqttClient): String {
         val device = deviceRepository.findDeviceEntityByNameAndOwnerUsername(
                 deviceInfo.deviceName, deviceInfo.username) ?: throw Exception("Device not found")
@@ -103,6 +119,11 @@ class DeviceService {
 
     }
 
+    /**
+     * Creates a thing name based on the name given by the user and then concatenated with the user's internal DB id. AWS
+     * requires all thing names be unique. This ensures different users can have the same thing name. This method adds the device to the db
+     * then creates a thing shadow on AWS. If creation of the thing fails, the db transaction is aborted.
+     */
     @Throws(Exception::class)
     suspend fun addDevice(deviceInfo: DeviceInfo): Boolean {
         val newThingName = deviceInfo.deviceName.plus(userService.userRepository.findUserByUsername(deviceInfo.username)?.id).trim()
@@ -140,6 +161,8 @@ class DeviceService {
         return false
     }
 
+
+
     fun addFavorite(deviceInfo: DeviceInfo): String {
         deviceRepository.apply {
             val prevFavorite = findDeviceEntityByFavoriteTrueAndOwnerUsername(deviceInfo.username)
@@ -176,6 +199,9 @@ class DeviceService {
         return null
     }
 
+    /**
+     * Builds the state json for an AWS thing shadow.
+     */
     private fun buildJson(shadowValues: Map<String, String>?, reportedValues: Map<String, Any>): String {
         val stateObject = ObjectMapper().createObjectNode()
         val attributeNode = ObjectMapper().createObjectNode()

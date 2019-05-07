@@ -12,6 +12,12 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Response
 import java.net.URI
 import java.time.Instant
 
+/**
+ * Singleton instance that handles interaction with AWS S3. This class fetches images then creates a signed URL
+ * which is then passed back to the Image controller that initiated the request
+ */
+
+
 object AwsS3Client {
 
     private val client = S3AsyncClient.builder().run {

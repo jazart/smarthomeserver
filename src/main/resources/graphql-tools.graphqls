@@ -1,3 +1,5 @@
+#Schema that defines objects and operations that a client can use to interact with the API. For more info see: https://graphql.org/
+
 type Query {
     user(name: String!): ParentUser
     childUser(username: String!): ChildUser

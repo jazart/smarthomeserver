@@ -13,6 +13,11 @@ import javax.sql.DataSource
 @Configuration
 class DatasourceConfig {
 
+    /**
+     * Creates the data source configuration by passing the db driver, name, hosted url, endpoint, and password. These
+     * are pulled from systel level env variables. You will need to enter your datasource info here or update your system
+     * env properties
+     */
     @Bean
     fun dataSource(): DataSource =
             DataSourceBuilder.create().run {
